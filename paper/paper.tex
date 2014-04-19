@@ -101,11 +101,68 @@ First level headings are in Times 10pt bold,
 centered with 1 line of space above the section head, and 1/2 space below it.
 For a section header immediately followed by a subsection header, the space should be merged.
 
-\subsection{Second Level Headings}
+\subsection{Chord Recognition}
 
-Second level headings are in Times 10pt bold, flush left,
-with 1 line of space above the section head, and 1/2 space below it.
-The first letter of each significant word is capitalized.
+% relevant papers
+% - pauwels & peeters
+% - matthais
+% - harte
+% - mirex 
+% - Utrecht agreement
+
+Despite being one of the oldest MIREX tasks, evaluation methodology and metrics for automatic chord recognition is an ongoing topic of discussion.
+%For example, ISMIR 2010 saw the fondly dubbed ``Utrecht Agreement on Chord Evaluation''\footnote{http://www.music-ir.org/mirex/wiki/The\_Utrecht\_Agreement\_on\_Chord\_Evaluation}, in which interested researchers met to discuss sane ways of quantifying the performance of automatic chord recognition systems.
+Sseveral recent articles address issues and concerns with vocabularies, comparison semantics, and other lexicographical challenges unique to chord recognition \cite{}.
+Ultimately, the source of this difficulty stems from the inherent subjectivity in ``spelling'' a chord name and the level of detail a human observer can provide in a reference annotation \cite{McVicar}.
+As a result, a consensus has yet to be reached regarding the single best approach to comparing two sequences of chord labels, and instead are often compared over a set of rules, e.g Major-Minor, Sevenths, with or without inversions, and so on.
+
+Thanks to the previous efforts of Harte \cite{}, text representations of chord labels adhere to a standardized format, consisting of a root, quality, extensions, and a bass note; of these, only the root is strictly required.
+However, in order to efficiently compare chords in a variety of different ways, it is helpful to first translate a given chord label $\mathcal{C}$ into a numerical representation, shown in Figure \ref{}.
+In this example, a $G:7(9)/5$ is mapped to split into 4 pieces of information: one, the root is mapped to an absolute pitch class $\mathcal{R}$, in $[0, 11]$, where $C\to0$, $C\sharp/D\flat\to1$, etc; two, the quality is mapped to a root-invariant 12-dimensional bit vector $\mathcal{Q}$ by setting the scale degrees of the quality; three, any extensions are applied (via addition or omission) to the quality bit vector as scale degrees in a single octave, resulting in pitch vector $\mathcal{P}$; and four, the bass interval (5) is translated to the relative scale degree in semitones $\mathcal{B}$.
+Note that the add-9 is rolled into a single octave as an add-2.
+This is a matter of convenience as extended chords (9's, 11's or 13's) are traditionally resolved to a single-octave equivalent, but the bit-vector representation could be easily expanded to represent such information.
+
+Having gone through this bit of effort, it is now straightforward to compare chords along the five rules used in MIREX 2013:
+\begin{enumerate}
+\item Root:
+	\begin{enumerate}
+	\item $\mathcal{R}_{est} == \mathcal{R}_{ref}$
+	\item $\forall \mathcal{Q}_{ref}$
+	\end{enumerate}
+\item Major-Minor: Rule 1.a, plus
+	\begin{enumerate}
+	\item $\mathcal{Q}_{est} == \mathcal{Q}_{ref}$
+	\item $\mathcal{Q}_{ref} \in \{Maj, min\}$ 
+	\end{enumerate}
+\item Major-Minor w/Inversions: Rule 2, plus
+	\begin{enumerate}
+	\item $\mathcal{B}_{ref} \in \mathcal{Q}_{ref}$
+	\end{enumerate}
+\item Sevenths: Rule 1.1, plus
+	\begin{enumerate}
+	\item $\mathcal{Q}_{est} == \mathcal{Q}_{ref} $
+	\item $ \mathcal{Q}_{ref} \in \{Maj, min, Maj7, min7, 7\}$ 
+	\end{enumerate}
+\item Sevenths w/Inversions: Rule 4, plus
+	\begin{enumerate}
+	\item $\mathcal{B}_{ref} \in \mathcal{Q}_{ref}$ 
+	\end{enumerate}
+\end{enumerate}
+
+Following recent trends in MIREX, an overall score is computed by weighting each comparison by the duration of its interval, over all intervals; stated another way, this is the piecewise continuous-time integral of the intersection of two chord sequences, $(\mathbf{C}_{ref}, \mathbf{C}_{est})$, expressed as follows:
+
+\begin{equation}
+S(\mathbf{C}_{ref}, \mathbf{C}_{est}) = \frac{1}{T}\int_{t=0}^{T} \mathcal{C}_{ref}(t) == \mathcal{C}_{est}(t)
+\end{equation}
+
+\noindent Here, this is achieved here by forming the union of the boundaries in each sequence, and summing the time intervals of the correct ranges. Note that equivalence is subject to one of the rules defined previously. 
+
+Finally, the total score over a set of $N$ items is given by a discrete summation, where the importance of each score, $S_n$, is weighted by the duration, $T_n$, of each annotation:
+
+\begin{equation}
+S_{total} = \frac{\sum_{n=0}^{N} T_n*S_n}{\sum_{n=0}^{N} T_n}
+\end{equation}
+ 
 
 \subsubsection{Third and Further Level Headings}
 
