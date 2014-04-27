@@ -7,6 +7,12 @@
 \usepackage{ismir2014,amsmath,cite}
 \usepackage{graphicx}
 
+\def\eg{\emph{e.g.\/}}
+\def\ie{\emph{i.e.\/}}
+\def\etc{\emph{etc.\/}}
+\def\etal{\emph{et al.\/}}
+
+
 % Title.
 % ------
 \title{PAPER TEMPLATE FOR ISMIR 2014}
@@ -162,15 +168,34 @@ Finally, the total score over a set of $N$ items is given by a discrete summatio
 \begin{equation}
 S_{total} = \frac{\sum_{n=0}^{N} T_n*S_n}{\sum_{n=0}^{N} T_n}
 \end{equation}
- 
 
-\subsubsection{Third and Further Level Headings}
 
-Third level headings are in Times 10pt italic, flush left,
-with 1/2 line of space above the section head, and 1/2 space below it.
-The first letter of each significant word is capitalized.
+\subsection{Segmentation}
 
-Using more than three levels of headings is highly discouraged.
+Music segmentation evaluation metrics can be grouped into two main categories: boundary annotation, and structural annotation.
+In the former, the task is to accurately predict the times of boundaries between adjacent segments (\eg, where a \emph{verse} transitions to a \emph{chorus}).
+Structural annotation metrics are primarily concerned with the labeling task: correctly identifying multiple segments as belonging to the same or different classes.
+
+In both tasks, we assume that annotations take the form of a partitioning of the track 
+into intervals ${(s_i, t_i)}_{i=1}^m$, where $s_0=0$ denotes the beginning of track, 
+$t_m$ denotes the end of the track, and $t_i = s_{i+1}$.
+Structural annotation additionally requires that each interval be assigned a string
+descriptor.
+
+
+\subsubsection{Boundary annotation}
+
+Within boundary annotation, there are two categories of evaluation metrics: detection,
+and deviation~\cite{turnbull2007}.
+
+Let $B_R$ ($B_E$) denote the set of unique interval boundary times in the reference 
+(estimated) annotation, and let $W$ denote a tolerance window, typically either $0.5$s
+or $3.0$s.  
+
+
+\subsubsection{Structural annotation}
+
+
 
 \section{Footnotes and Figures}
 
