@@ -267,7 +267,29 @@ all excerpts in the collection.
 
 \subsubsection{Discussion}
 
+In the measure definitions provided above, it is assumed that both the estimate
+and reference sequences are sampled using the same time grid (hop size). In
+practice, however, this is not always the case, since the time grid of the
+reference depends on the hop size used by the pitch tracker that produced
+it, and similarly the time grid of the estimate depends on the specific melody
+extraction algorithm that produced it. This means that the sequences must be
+resampled onto a common time-grid prior to the computation of the measures. For
+the MIREX AME task, any sequence (be it reference or estimate) that is not
+sampled using a 10 ms hop size is resampled using $0^{th}$ order interpolation,
+i.e.~each frequency value in the target sequence is set to its nearest
+neighbour (in time) from the source sequence. This kind of interpolation can
+potentially have a detrimental effect on the evaluation, depending on the
+difference between the source and target time grids. In particular, it can
+result in artificially low scores for sequences with rapidly changing pitch
+values, such as opera singing with deep vibrato. 
 
+For this reason, the melody evaluator in mir\_eval uses $1^{st}$ order (linear)
+interpolation by default in order to map the reference and estimate sequences
+onto a common time-grid. Assuming the original timestamps of both sequences
+correspond to the \textit{center} of each analysis frame (as they should),
+using $1^{st}$ order rather than $0^{th}$ order interpolation means the results
+returned by mir\_eval are lower-bounded by the MIREX results and are, in our
+view, more accurate.
 
 
 
