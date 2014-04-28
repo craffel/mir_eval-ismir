@@ -11,6 +11,7 @@
 \def\ie{\emph{i.e.\/}}
 \def\etc{\emph{etc.\/}}
 \def\etal{\emph{et al.\/}}
+\DeclareMathOperator*{\median}{median}
 
 
 % Title.
@@ -169,71 +170,51 @@ Finally, the total score over a set of $N$ items is given by a discrete summatio
 S_{total} = \frac{\sum_{n=0}^{N} T_n*S_n}{\sum_{n=0}^{N} T_n}
 \end{equation}
 
-<<<<<<< HEAD
-
 \subsection{Segmentation}
 
-Music segmentation evaluation metrics can be grouped into two main categories: boundary annotation, and structural annotation.
-In the former, the task is to accurately predict the times of boundaries between adjacent segments (\eg, where a \emph{verse} transitions to a \emph{chorus}).
-Structural annotation metrics are primarily concerned with the labeling task: correctly identifying multiple segments as belonging to the same or different classes.
+Evaluation criteria for segmentation fall into two categories: boundary annotation, and structural annotation.
+\emph{Boundary annotation} is the task of predicting the times at which structural changes occur, such as when a \emph{verse} transitions to a \emph{refrain}.
+\emph{Structural annotation} is the task of assigning labels to detected segments.  
+The estimated labels may be arbitrary strings --- such as $A$, $B$, $C$, \etc{} --- and they need not describe functional concepts.
 
 In both tasks, we assume that annotations take the form of a partitioning of the track 
 into intervals ${(s_i, t_i)}_{i=1}^m$, where $s_0=0$ denotes the beginning of track, 
 $t_m$ denotes the end of the track, and $t_i = s_{i+1}$.
-Structural annotation additionally requires that each interval be assigned a string
-descriptor.
+Structural annotation additionally requires that each interval be assigned a label $y_i$.
 
 
 \subsubsection{Boundary annotation}
 
 Within boundary annotation, there are two categories of evaluation metrics: detection,
-and deviation~\cite{turnbull2007}.
+and deviation~\cite{turnbull2007supervised}.  
 
-Let $B_R$ ($B_E$) denote the set of unique interval boundary times in the reference 
-(estimated) annotation, and let $W$ denote a tolerance window, typically either $0.5$s
-or $3.0$s.  
+\emph{Boundary detection} measures the precision, recall, and f-measure of boundary prediction within a tolerance window.
+Let $B_R$ ($B_E$) denote the set of unique interval boundaries in the reference (estimated) annotation, and let $W$ denote 
+a tolerance window, typically either $0.5$s or $3.0$s.  
+A \emph{hit} is defined as a pair $b_e \in B_E$, $b_r \in B_R$ such that $|b_e - b_r|
+\leq W$.  
 
+To define detection metrics, we require that no estimated boundary is counted for more than one reference boundary, and vice versa.
+This is accomplished by computing a maximum bipartite matching $H_W$ between $B_E$ and $B_R$ (subject to the window constraint $W$) using the Hopcroft-Karp algorithm~\cite{hopcroft1973n}.  
+Precision and recall with window $W$ are defined as
+\begin{align}
+P_W(B_R, B_E) &:= \frac{|H_W|}{|B_E|}\\
+R_W(B_R, B_E) &:= \frac{|H_W|}{|B_R|},
+\end{align}
+and the corresponding f-measure is defined by taking their harmonic mean.
+
+\emph{Boundary deviation} is comprised of two scores, which measure the median time between a reference boundary and its nearest corresponding estimated boundary, and vice versa.
+These two metrics have previously been defined as \emph{true-to-predicted} (T-to-P) and \emph{predicted-to-true} (P-to-T), though in the terminology of this document, we use 
+alternative naming of \emph{reference-to-estimated} (R-to-E) and \emph{estimated-to-reference} (E-to-R):
+\begin{align}
+\text{R-to-E}(B_R, B_E) &:= \displaystyle\median_{b_r \in B_R} \min_{b_e \in B_E} \left|b_r - b_e\right|\\
+\text{E-to-R}(B_R, B_E) &:= \displaystyle\median_{b_e \in B_E} \min_{b_r \in B_R} \left|b_r - b_e\right|.
+\end{align}
 
 \subsubsection{Structural annotation}
 
 
 
-\section{Footnotes and Figures}
-
-\subsection{Footnotes}
-
-Indicate footnotes with a number in the text.\footnote{This is a footnote.}
-Use 8pt type for footnotes. Place the footnotes at the bottom of the page on which they appear.
-Precede the footnote with a 0.5pt horizontal rule.
-
-\subsection{Figures, Tables and Captions}
-
-All artwork must be centered, neat, clean, and legible.
-All lines should be very dark for purposes of reproduction and art work should not be hand-drawn.
-The proceedings are not in color, and therefore all figures must make sense in black-and-white form.
-Figure and table numbers and captions always appear below the figure.
-Leave 1 line space between the figure or table and the caption.
-Each figure or table is numbered consecutively. Captions should be Times 10pt.
-Place tables/figures in text as close to the reference as possible.
-References to tables and figures should be capitalized, for example:
-see \figref{fig:example} and \tabref{tab:example}.
-Figures and tables may extend across both columns to a maximum width of 17.2cm.
-
-\begin{table}
- \begin{center}
- \begin{tabular}{|l|l|}
-  \hline
-  String value & Numeric value \\
-  \hline
-  Hello ISMIR  & 2014 \\
-  \hline
- \end{tabular}
-\end{center}
- \caption{Table captions should be placed below the table.}
- \label{tab:example}
-\end{table}
-=======
->>>>>>> d30493c46c527bb4d8b6b120dbb612023fafd20c
 
 \subsection{Melody Extraction}
 \subsubsection{Task definition}
