@@ -88,13 +88,33 @@ for alg_name in ALG_NAMES:
 # <codecell>
 
 def clean_onsets(onsets):
-    ''' Simple function to remove negative onsets and sort '''
+    ''' Turns 0-dim onset lists (floats) into 1-dim arrays '''
     if onsets.ndim == 0:
-        onsets = np.array([onsets])
-    if onsets.size > 0:
-        return np.sort(onsets[onsets > 0])
+        return np.array([onsets])
     else:
         return onsets
+
+# <codecell>
+
+def f_measure_greedy(reference_onsets, estimated_onsets, window=.05):
+    # If either list is empty, return 0s
+    if reference_onsets.size == 0 or estimated_onsets.size == 0:
+        return 0., 0., 0.
+    correct = 0.0
+    count = 0
+    for onset in reference_onsets:
+        for n in xrange(count, estimated_onsets.shape[0]):
+            if np.abs(estimated_onsets[n] - onset) < window:
+                correct += 1
+                count = n + 1
+                break
+            elif estimated_onsets[n] > (onset + window):
+                count = n
+                break
+    precision = correct/estimated_onsets.shape[0]
+    recall = correct/reference_onsets.shape[0]
+    # Compute F-measure and return all statistics
+    return mir_eval.util.f_measure(precision, recall), precision, recall
 
 # <codecell>
 
@@ -144,8 +164,8 @@ mirex_scores = np.vstack(mirex_scores)
 
 # <codecell>
 
-diff = np.abs(mirex_scores - np.round(mir_eval_scores, 3))
-diff[np.less_equal(diff, .0010001)] = 0
+diff = np.abs(mirex_scores - np.round(mir_eval_scores, 4))
+diff[np.less_equal(diff, .00010001)] = 0
 print np.sum(diff, axis=0)/np.sum(mirex_scores, axis=0)
-print np.sum(diff, axis=0)/mirex_scores.shape[0]
+print np.mean(diff, axis=0)
 
