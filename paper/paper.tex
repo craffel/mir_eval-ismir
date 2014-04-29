@@ -182,9 +182,30 @@ S_{total} = \frac{\sum_{n=0}^{N} T_n*S_n}{\sum_{n=0}^{N} T_n}
  
 \subsection{Pattern Discovery}
 
-This recent MIREX task aims to evaluate algorithms that identify musical patterns (i.e. short fragments or melodic ideas that repeat at least twice) both from audio and symbolic representations.
-Given the novelty of this task, the metrics used in 2013 (the first year to appear on MIREX) are subject to modifications in further editions.
-However, Colins\cite{TomColins2013} put together all the previously existent metrics and a few new ones for this task in its first appearance in MIREX, which resulted in 21 different scores, each one implemented in MIR-eval.
+This task aims to evaluate algorithms that identify musical patterns (i.e. short fragments or melodic ideas that repeat at least twice) both from audio and symbolic representations.
+Given the novelty of this task \footnote{The first year to appear on MIREX was 2013.}, the evaluation metrics are likely to be modified in further editions.
+Nonetheless, Collins put together all the previously existent metrics and a few new ones for this task in its first appearance in MIREX\cite{Collins2013}, which resulted in 19 different scores, each one (except for the two that evaluate the algorithm execution time) implemented in MIR-eval and described below:
+
+\begin{itemize}
+    \item
+      \textbf{Standard F-measure, Precision, and Recall (F$_1$, P, R)}: This metric, composed of three scores, checks if the prototype patterns of the reference match possible key-transposed patterns in the prototype patterns of the estimations.
+      Since the sizes of these prototypes must be equal, this metric is quite restrictive and it tends to be 0 most of the time (see 2013 MIREX results).
+    \item
+      \textbf{Establishment F-measure, Precision, and Recall (F1$_{est}$, P$_{est}$, R$_{est}$)}: These scores evaluate the amount of patterns that were successfully identified by the estimated results, no matter how many occurrences they found.
+      In other words, this metric captures the ability of the algorithm to \textit{establish} that the estimated patterns are actually contained in the reference annotation.
+    \item 
+      \textbf{Occurrence F-measure, Precision, and Recall (F1$_{occ}$, P$_{occ}$, R$_{occ}$)}: Independently of how many patterns were correctly established, we may also want to know how well the algorithm finds all their respective occurrences throughout the piece.
+      This metric aims to quantize this \textit{occurrence} retrieval quality of the algorithm.
+      This metric has a tolerance parameter $c$ to allow differences when evaluating the similarity between occurrences, and in MIREX they use $c=.75$ and $c=.5$.
+    \item
+      \textbf{Three-layer F-measure, Precision, and Recall (TLF$_1$, P$_3$, R$_3$)}: These scores can be seen as an improved version of the standard metrics.
+      They capture both the establishment of the patterns and the occurrence retrieval in a single set of scores, being more permissive than the standard evaluation.
+    \item
+      \textbf{First $N$ patterns metrics (FFTP$_{est}$, FFP)}: This includes the first $N$ patterns target proportion establishment recall, and the first $N$ patterns three-layer precision. 
+      By analyzing the first $N$ patterns only, we evaluate the ability of the algorithm of sorting the identified patterns based on their relevance. 
+      In MIREX, $N=5$.
+
+\end{itemize}
 
 \subsection{Segmentation}
 
