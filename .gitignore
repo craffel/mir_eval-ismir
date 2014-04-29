@@ -106,4 +106,5 @@ coverage.xml
 # Sphinx documentation
 docs/_build/
 
-
+# IPython notebook
+.ipynb_checkpoints
