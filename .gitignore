@@ -109,3 +109,6 @@ docs/_build/
 # Vim
 *.swp
 *.synctex
+
+# IPython notebook
+.ipynb_checkpoints
