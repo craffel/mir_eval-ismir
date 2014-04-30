@@ -41,7 +41,7 @@ for alg in ALG_NAMES:
 
 # <codecell>
 
-for filename in glob.glob(os.path.join(BASE_DATA_PATH, 'mirex_scores_raw', '*.csv')):
+for filename in glob.glob(os.path.join(csv_dir, '*.csv')):
     output_list = []
     with open(filename, 'r') as f:
         csv_reader = csv.reader(f)
