@@ -265,7 +265,7 @@ diff = mirex_scores - np.round(mir_eval_scores, 4)
 for n, key in enumerate(METRIC_KEYS):
     print ' '*14*n + key
 print np.sum(np.abs(diff), axis=0)/np.sum(mirex_scores, axis=0)
-print np.mean(diff, axis=0)
+print np.mean(np.abs(diff), axis=0)
 
 # <codecell>
 
