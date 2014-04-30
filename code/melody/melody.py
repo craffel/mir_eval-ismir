@@ -161,23 +161,6 @@ for filename in glob.glob(os.path.join(csv_dir, '*.csv')):
 
 # <codecell>
 
-def constant_hop_times(max_time, hop):
-    # Avoid float problems
-    max_time = np.round(max_time*1e10)*1e-10
-    times_new = np.linspace(0, hop*int(np.floor(max_time/hop)), int(np.floor(max_time/hop)) + 1)
-    times_new = np.round(times_new*1e10)*1e-10
-    return times_new
-
-# <codecell>
-
-def resample_zero(times, values, times_new):
-    if times_new.max() > times.max():
-        times = np.append(times, times_new.max())
-        values = np.append(values, 0)
-    return scipy.interpolate.interp1d(times, values, 'zero')(times_new)
-
-# <codecell>
-
 for ds in ['reference', 'estimated']:
     for mirex_file in glob.glob(os.path.join(BASE_DATA_PATH, '{}_mirex_50ms'.format(ds), '*', '*.txt')):
         mirex_times, mirex_values = mir_eval.io.load_time_series(mirex_file)
@@ -215,7 +198,8 @@ def process_one_algorithm(algorithm_directory, skip=False):
                                                                          os.path.split(estimated_melody_file)[1]))):
             ref_time, ref_freq = mir_eval.io.load_time_series(reference_melody_file)
             ref_v, est_v, ref_c, est_c = mir_eval.melody.to_cent_voicing(ref_time, ref_freq,
-                                                                         est_time, est_freq)
+                                                                         est_time, est_freq,
+                                                                         kind='zero', hop=0.01)
             for n, metric_name in enumerate(METRIC_KEYS):
                 if metric_name == 'Voicing Recall Rate':
                     vx_recall, vx_false_alm = mir_eval.melody.voicing_measures(ref_v, est_v)
@@ -261,11 +245,19 @@ np.set_printoptions(precision=10, threshold=10000, linewidth=150, suppress=True)
 
 # <codecell>
 
-diff = mirex_scores - np.round(mir_eval_scores, 4)
+print "Relative"
+print ' ',
 for n, key in enumerate(METRIC_KEYS):
-    print ' '*14*n + key
+    print '{:13s}'.format(key[:12]),
+print
 print np.sum(np.abs(diff), axis=0)/np.sum(mirex_scores, axis=0)
-print np.mean(np.abs(diff), axis=0)
+print
+print "Absolute"
+print ' ',
+for n, key in enumerate(METRIC_KEYS):
+    print '{:13s}'.format(key[:12]),
+print
+print np.mean(np.abs(diff), axis=0)/100.
 
 # <codecell>
 
