@@ -13,13 +13,51 @@ import glob
 import os
 import csv
 import mir_eval
+sys.path.append('../')
+import convert_json_instants_to_lab
 import shutil
 import joblib
+import urllib
 
 # <codecell>
 
 BASE_DATA_PATH = '../../data/beat/'
 METRIC_KEYS = ['F-Measure', 'Cemgil', 'Goto', 'McKinney P-score', 'CMLc', 'CMLt', 'AMLc', 'AMLt', 'D (bits)']
+ALG_NAMES = ['FW4', 'ZDBG1', 'FW2', 'FW1', 'KFRO1', 'ZDG1', 'ZDG2', 'CDF2', 'CDF1', 'GP3',
+             'DP1', 'SB6', 'GP1', 'GKC3', 'SB5', 'GP2', 'ES3', 'ES1', 'EWFS1', 'FK1']
+
+# <codecell>
+
+datasets = ['dav', 'maz', 'mck']
+js_prefixes = ['smc', 'beatmaz000', 'beatmck000']
+# SMC dataset is missing a lot of entries.
+file_ranges = [np.delete(np.arange(1, 290), [19,24,28,30,38,39,44,48,49,52,61,69,
+                                             76,77,80,82,89,90,93,96,101,106,107,
+                                             109,111,114,121,122,124,127,128,130,
+                                             131,133,135,137,140,143,144,154,155,
+                                             159,161,162,163,164,176,179,182,184,
+                                             185,188,190,195,199,200,209,217,227,
+                                             229,230,232,233,237,239,244,245,246,
+                                             249,266,267,269]), range(322), range(140)]
+JS_URL = "http://nema.lis.illinois.edu/nema_out/mirex2013/results/abt/{}/transcription{}{:03d}.js"
+raw_js_dir = os.path.join(BASE_DATA_PATH, 'raw_js_data')
+if not os.path.exists(raw_js_dir):
+    os.makedirs(raw_js_dir)
+for dataset, js_prefix, file_range in zip(datasets, js_prefixes, file_ranges):
+    for n in file_range:
+        file_url = JS_URL.format(dataset, js_prefix, n)
+        urllib.urlretrieve(file_url, os.path.join(raw_js_dir, os.path.split(file_url)[1]))
+
+# <codecell>
+
+RESULT_URL = "http://nema.lis.illinois.edu/nema_out/mirex2013/results/abt/{}/{}/per_track_results.csv"
+csv_dir = os.path.join(BASE_DATA_PATH, 'mirex_scores_raw')
+if not os.path.exists(csv_dir):
+    os.makedirs(csv_dir)
+for dataset in datasets:
+    for alg in ALG_NAMES:
+        file_url = RESULT_URL.format(dataset, alg)
+        urllib.urlretrieve(file_url, os.path.join(csv_dir, dataset + '-' + alg + '.csv'))
 
 # <codecell>
 
@@ -30,7 +68,7 @@ METRIC_KEYS = ['F-Measure', 'Cemgil', 'Goto', 'McKinney P-score', 'CMLc', 'CMLt'
 # The first column is "fold", which is not useful for us.
 # The second column is the file, but it's not the filename.
 # So, remove the first column and make the second look like the filename
-for filename in glob.glob(os.path.join(BASE_DATA_PATH, '*', 'raw_scores', '*.csv')):
+for filename in glob.glob(os.path.join(BASE_DATA_PATH, 'mirex_scores_raw', '*.csv')):
     output_list = []
     with open(filename, 'r') as f:
         csv_reader = csv.reader(f)
@@ -40,13 +78,40 @@ for filename in glob.glob(os.path.join(BASE_DATA_PATH, '*', 'raw_scores', '*.csv
                 # Construct the filename/output path
                 output_filename = 'transcription' + row[1].replace('_', '') + '.txt'
                 output_path = filename.replace('mirex_scores_raw', 'mirex_scores')
-                output_path = os.path.join(os.path.split(output_path)[0], os.path.split(output_path)[1].replace('.csv', ''))
+                algo_name = os.path.split(output_path)[1].replace('.csv', '').split('-')[1]
+                output_path = os.path.join(os.path.split(output_path)[0], algo_name)
                 # Make sure output dir exists
                 try:
                     os.makedirs(output_path)
                 except OSError:
                     pass
                 np.savetxt(os.path.join(output_path, output_filename), [float(x) for x in row[2:]])
+
+# <codecell>
+
+js_dir = os.path.join(BASE_DATA_PATH, 'raw_js_data')
+reference_dir = os.path.join(BASE_DATA_PATH, 'reference')
+
+try:
+    os.makedirs(js_dir)
+except OSError:
+    pass
+try:
+    os.makedirs(reference_dir)
+except OSError:
+    pass
+
+for filename in glob.glob(os.path.join(js_dir, '*.js')):
+    base_name = os.path.splitext(os.path.split(filename)[1])[0]
+    convert_json_instants_to_lab.convert_json_file_to_lab_files(base_name, js_dir, reference_dir)
+
+for filename in glob.glob(os.path.join(reference_dir, '*', '*.lab')):
+    shutil.move(filename, filename.replace('.lab', '.txt'))
+    
+estimated_dir = os.path.join(BASE_DATA_PATH, 'estimated')
+        
+for alg_name in ALG_NAMES:
+    shutil.move(os.path.join(reference_dir, alg_name), os.path.join(estimated_dir, alg_name))
 
 # <codecell>
 
@@ -79,7 +144,7 @@ def get_mir_eval_scores(reference_beats, estimated_beats):
 
 def process_one_algorithm(algorithm_directory, skip=False):
     ''' Computes mir_eval scores for all output files from one algorithm '''
-    for estimated_beats_file in glob.glob(os.path.join(BASE_DATA_PATH, '*', 'estimated',
+    for estimated_beats_file in glob.glob(os.path.join(BASE_DATA_PATH, 'estimated',
                                                        algorithm_directory, '*.txt')):
         estimated_beats = np.loadtxt(estimated_beats_file)
         # Skip scores already computed
@@ -87,7 +152,7 @@ def process_one_algorithm(algorithm_directory, skip=False):
             continue
         scores = np.zeros(len(METRIC_KEYS))
         # Metrics are computed as the mean across all reference annotations
-        for N, reference_beats_file in enumerate(glob.glob(os.path.join(BASE_DATA_PATH, '*', 'reference', '*',
+        for N, reference_beats_file in enumerate(glob.glob(os.path.join(BASE_DATA_PATH, 'reference', '*',
                                                                         os.path.split(estimated_beats_file)[1]))):
             reference_beats = np.loadtxt(reference_beats_file)
             scores += get_mir_eval_scores(reference_beats, estimated_beats)
@@ -103,14 +168,13 @@ def process_one_algorithm(algorithm_directory, skip=False):
 
 # <codecell>
 
-joblib.Parallel(n_jobs=7)(joblib.delayed(process_one_algorithm)(os.path.split(algo)[1])
-                          for algo in glob.glob(os.path.join(BASE_DATA_PATH, 'maz', 'estimated', '*')))
+joblib.Parallel(n_jobs=7)(joblib.delayed(process_one_algorithm)(algo) for algo in ALG_NAMES)
 
 # <codecell>
 
 mir_eval_scores = []
 mirex_scores = []
-score_glob = glob.glob(os.path.join(BASE_DATA_PATH, '*', 'mir_eval_scores', '*', '*.txt'))
+score_glob = glob.glob(os.path.join(BASE_DATA_PATH, 'mir_eval_scores', '*', '*.txt'))
 for mir_eval_score_file in score_glob:
     mir_eval_scores.append([np.loadtxt(mir_eval_score_file)])
     mirex_scores.append([np.loadtxt(mir_eval_score_file.replace('mir_eval_scores', 'mirex_scores'))])
@@ -119,8 +183,23 @@ mirex_scores = np.vstack(mirex_scores)
 
 # <codecell>
 
-diff = np.abs(mirex_scores - np.round(mir_eval_scores, 3))
-diff[np.less_equal(diff, .0010001)] = 0
-print np.sum(diff, axis=0)/np.sum(mirex_scores, axis=0)
-print np.sum(diff, axis=0)/mirex_scores.shape[0]
+np.set_printoptions(precision=10, threshold=10000, linewidth=150, suppress=True)
+
+# <codecell>
+
+diff = np.round(mirex_scores, 3) - np.round(mir_eval_scores, 3)
+diff[np.less_equal(np.abs(diff), .0010001)] = 0
+print "Relative"
+print ' ',
+for n, key in enumerate(METRIC_KEYS):
+    print '{:13s}'.format(key[:12]),
+print
+print np.sum(np.abs(diff), axis=0)/np.sum(mirex_scores, axis=0)
+print
+print "Absolute"
+print ' ',
+for n, key in enumerate(METRIC_KEYS):
+    print '{:13s}'.format(key[:12]),
+print
+print np.mean(np.abs(diff), axis=0)/100.
 
