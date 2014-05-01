@@ -76,9 +76,15 @@ Central to the field of MIR research is the evaluation of algorithms used to ext
 % Metrics are used as a proxy
 
 % Evaluation should be easy and standardized
-% MIREX is the standard, but it's not community-developed, not transparent, not well-documented, uses multiple languages, is coupled to NEMA, not easy to use, etc.
+% MIREX is the standard, but it's not community-developed, not transparent, not well-documented, uses multiple languages, is coupled to NEMA, not easy to use, dependencies, etc.
 % As a result many different implementations of metrics, and implementation matters
 % mir_eval as the antidote to the above
+
+\section{mir\_eval's architecture}
+
+% Task submodules, one function per metric
+% io submodule for loading in data
+% Evaluators
 
 \section{Tasks included in mir\_eval}
 
@@ -86,7 +92,7 @@ Central to the field of MIR research is the evaluation of algorithms used to ext
 
 The aim of a beat detection algorithm is to report the times at which a typical human listener might tap their foot to a piece of music.  As a result, most metrics for evaluating the performance of beat tracking systems involve computing the error between the estimated beat times and some reference list of beat locations.  Many metrics additionally compare the beat sequences at different metric levels in order to deal with the ambiguity of tempo \cite{levy2011improving}.
 
-mir\_eval includes the following metrics for beat tracking, which are defined in detail in \cite{davies2009evaluation}: The f-measure of the beat sequence, where an estimated beat is considered correct if it is sufficiently close to a reference beat; Cemgil's score, which computes the sum of Gaussian errors for each beat; Goto's score, a binary score which is 1 when some specific heuristic criteria are met, McKinney's P-score, which computes the cross-correlation of the estimated and reference beat sequences represented as impulse trains; continuity-based scores which compute the proportion of the beat sequence which is continuously correct; and finally the information gain of the beat error histogram to a uniform distribution.
+mir\_eval includes the following metrics for beat tracking, which are defined in detail in \cite{davies2009evaluation}: The \textbf{f-measure} of the beat sequence, where an estimated beat is considered correct if it is sufficiently close to a reference beat; \textbf{Cemgil's score}, which computes the sum of Gaussian errors for each beat; \textbf{Goto's score}, a binary score which is 1 when some specific heuristic criteria are met, \textbf{McKinney's P-score}, which computes the cross-correlation of the estimated and reference beat sequences represented as impulse trains; \textbf{continuity-based scores} which compute the proportion of the beat sequence which is continuously correct; and finally the \textbf{information gain} of the beat error histogram to a uniform distribution.
 
 \subsection{Chord Recognition}
 
@@ -382,10 +388,16 @@ using $1^{st}$-order rather than $0^{th}$-order interpolation means the results
 returned by mir\_eval are lower-bounded by the MIREX results and are, in our
 view, more accurate.
 
+\subsection{Onset Detection}
+
+The goal of an onset detection algorithm is to automatically determine when notes are played in a piece of music.  As is also done in beat tracking and segment boundary detection, the primary method used to evaluate onset detectors is to first determine which estimated onsets are ``correct'', where correctness is defined as being within a small window of a reference onset \cite{bock2012evaluating}.  From this, \textbf{precision}, \textbf{recall}, and \textbf{f-measure} scores are computed.  
+
 \subsection{Blind Source Separation}
 
 
 \section{Comparison to Existing Implementations}
+
+
 
 \section{Discussion}
 
