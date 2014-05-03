@@ -64,6 +64,26 @@ def test_boundary_deviation():
     # Done
     pass
 
+def test_structure_rand():
+
+    def __test_rand(_ref_t, _ref_l, _est_t, _est_l):
+        _ref_t, _ref_l = mir_eval.util.adjust_intervals(_ref_t, labels=_ref_l, t_min=0.0)
+        _est_t, _est_l = mir_eval.util.adjust_intervals(_est_t, labels=_est_l, t_min=0.0, t_max=_ref_t.max())
+
+        rand = mir_eval.structure.rand_index(_ref_t, _ref_l, _est_t, _est_l)
+
+        print rand, scores['RAND']
+
+        assert np.allclose(rand,   scores['RAND'], atol=A_TOL)
+
+    # Iterate over fixtures
+    for ref_t, ref_l, est_t, est_l, scores in generate_data():
+
+        yield (__test_rand, ref_t, ref_l, est_t, est_l)
+
+    # Done
+    pass
+
 def test_structure_pairwise():
 
     def __test_pairwise(_ref_t, _ref_l, _est_t, _est_l):
