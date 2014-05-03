@@ -194,9 +194,6 @@ def get_mir_eval_scores(ref_intervals, ref_labels, est_intervals, est_labels):
     scores.append(precision)
     scores.append(recall)
 
-    ari_score = mir_eval.structure.ari(ref_intervals_adj, ref_labels_adj,
-                                       est_intervals_adj, est_labels_adj)
-    scores.append(ari_score)
     rand_score = mir_eval.structure.rand_index(ref_intervals_adj, ref_labels_adj,
                                                est_intervals_adj, est_labels_adj)
     scores.append(rand_score)
@@ -235,7 +232,7 @@ def process_one_algorithm(algorithm_directory, skip=False):
                 scores += get_mir_eval_scores(ref_intervals, ref_labels, est_intervals, est_labels)
             except Exception as e:
                 N = N - 1
-                print "Skipping {} because {}".format(os.path.split(reference_segments_file)[1], str(e))
+                print "Skipping {} because {}".format(os.path.split(reference_segments_file)[1], e)
         if N >= 0:
             # Compute mean
             scores /= float(N + 1)
@@ -275,3 +272,4 @@ diff = np.round(mirex_scores, 4) - np.round(mir_eval_scores, 4)
 diff[np.less_equal(np.abs(diff), .00010001)] = 0
 for n, (key, score) in enumerate(zip(METRIC_KEYS, np.mean(np.abs(diff)/score_mean, axis=0))):
     print "{} : {:.5f}".format(key, score)
+
