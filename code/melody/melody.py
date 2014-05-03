@@ -245,19 +245,18 @@ np.set_printoptions(precision=10, threshold=10000, linewidth=150, suppress=True)
 
 # <codecell>
 
-print "Relative"
+score_mean = np.mean(np.dstack([np.round(mirex_scores, 4), np.round(mir_eval_scores, 4)]), axis=-1)
+score_mean = score_mean + (score_mean == 0)
+
+# <codecell>
+
+diff = np.round(mirex_scores, 4) - np.round(mir_eval_scores, 4)
+diff[np.less_equal(np.abs(diff), .00010001)] = 0
 print ' ',
 for n, key in enumerate(METRIC_KEYS):
     print '{:13s}'.format(key[:12]),
 print
-print np.sum(np.abs(diff), axis=0)/np.sum(mirex_scores, axis=0)
-print
-print "Absolute"
-print ' ',
-for n, key in enumerate(METRIC_KEYS):
-    print '{:13s}'.format(key[:12]),
-print
-print np.mean(np.abs(diff), axis=0)/100.
+print np.mean(np.abs(diff)/score_mean, axis=0)
 
 # <codecell>
 
