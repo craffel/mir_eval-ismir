@@ -230,7 +230,7 @@ def process_one_algorithm(algorithm_directory, skip=False):
                 scores += get_mir_eval_scores(ref_intervals, ref_labels, est_intervals, est_labels)
             except Exception as e:
                 N = N - 1
-                print "Skipping {} because {}".format(reference_segments_file, str(e))
+                print "Skipping {} because {}".format(os.path.split(reference_segments_file)[1], str(e))
         if N >= 0:
             # Compute mean
             scores /= float(N + 1)
