@@ -171,29 +171,29 @@ def get_mir_eval_scores(ref_intervals, ref_labels, est_intervals, est_labels):
     ''' Computes all mir_eval segment metrics and returns them in the order of METRIC_KEYS
     '''
     scores = []
-    ref_intervals, ref_labels = mir_eval.util.adjust_intervals(ref_intervals,
-                                                               ref_labels,
-                                                               t_min=0)
-    est_intervals, est_labels = mir_eval.util.adjust_intervals(est_intervals,
-                                                               est_labels,
-                                                               t_min=0,
-                                                               t_max=ref_intervals.max())
+    ref_intervals_adj, ref_labels_adj = mir_eval.util.adjust_intervals(ref_intervals,
+                                                                       ref_labels,
+                                                                       t_min=0)
+    est_intervals_adj, est_labels_adj = mir_eval.util.adjust_intervals(est_intervals,
+                                                                       est_labels,
+                                                                       t_min=0,
+                                                                       t_max=ref_intervals.max())
     
-    S_over, S_under, S_F = mir_eval.structure.nce(ref_intervals, ref_labels,
-                                                  est_intervals, est_labels)
+    S_over, S_under, S_F = mir_eval.structure.nce(ref_intervals_adj, ref_labels_adj,
+                                                  est_intervals_adj, est_labels_adj)
     scores.append(S_over)
     scores.append(S_under)
     
-    precision, recall, f = mir_eval.structure.pairwise(ref_intervals,
-                                                       ref_labels,
-                                                       est_intervals,
-                                                       est_labels)
+    precision, recall, f = mir_eval.structure.pairwise(ref_intervals_adj,
+                                                       ref_labels_adj,
+                                                       est_intervals_adj,
+                                                       est_labels_adj)
     scores.append(f)
     scores.append(precision)
     scores.append(recall)
     
-    ari_score = mir_eval.structure.ari(ref_intervals, ref_labels,
-                                         est_intervals, est_labels)
+    ari_score = mir_eval.structure.ari(ref_intervals_adj, ref_labels_adj,
+                                       est_intervals_adj, est_labels_adj)
     scores.append(ari_score)
     
     P05, R05, F05 = mir_eval.boundary.detection(ref_intervals, est_intervals, window=0.5)
@@ -242,7 +242,7 @@ def process_one_algorithm(algorithm_directory, skip=False):
 
 # <codecell>
 
-joblib.Parallel(n_jobs=8)(joblib.delayed(process_one_algorithm)(algo, True) for algo in ALG_NAMES)
+joblib.Parallel(n_jobs=8)(joblib.delayed(process_one_algorithm)(algo) for algo in ALG_NAMES)
 
 # <codecell>
 
