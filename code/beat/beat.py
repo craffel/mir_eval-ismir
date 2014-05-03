@@ -4,7 +4,7 @@
 # <codecell>
 
 '''
-Compare mir_eval against MIREX 2012 beat results
+Compare mir_eval against MIREX 2013 beat results
 '''
 
 # <codecell>
@@ -183,23 +183,20 @@ mirex_scores = np.vstack(mirex_scores)
 
 # <codecell>
 
-np.set_printoptions(precision=10, threshold=10000, linewidth=150, suppress=True)
+np.set_printoptions(precision=5, threshold=10000, linewidth=150, suppress=True)
+
+# <codecell>
+
+score_mean = np.mean(np.dstack([np.round(mirex_scores, 3), np.round(mir_eval_scores, 3)]), axis=-1)
+score_mean = score_mean + (score_mean == 0)
 
 # <codecell>
 
 diff = np.round(mirex_scores, 3) - np.round(mir_eval_scores, 3)
 diff[np.less_equal(np.abs(diff), .0010001)] = 0
-print "Relative"
 print ' ',
 for n, key in enumerate(METRIC_KEYS):
-    print '{:13s}'.format(key[:12]),
+    print '{:8s}'.format(key[:7]),
 print
-print np.sum(np.abs(diff), axis=0)/np.sum(mirex_scores, axis=0)
-print
-print "Absolute"
-print ' ',
-for n, key in enumerate(METRIC_KEYS):
-    print '{:13s}'.format(key[:12]),
-print
-print np.mean(np.abs(diff), axis=0)/100.
+print np.mean(np.abs(diff)/score_mean, axis=0)
 
