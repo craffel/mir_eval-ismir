@@ -261,7 +261,7 @@ np.set_printoptions(precision=5, threshold=10000, linewidth=150, suppress=True)
 
 # <codecell>
 
-score_mean = np.mean(np.dstack([np.round(mirex_scores, 3), np.round(mir_eval_scores, 3)]), axis=-1)
+score_mean = np.mean(np.dstack([np.round(mirex_scores, 4), np.round(mir_eval_scores, 4)]), axis=-1)
 score_mean = score_max + (score_max == 0)
 
 # <codecell>
