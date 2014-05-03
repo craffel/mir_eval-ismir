@@ -13,6 +13,8 @@ import glob
 import os
 import csv
 import mir_eval
+import sys
+import numpy as np
 sys.path.append('../')
 import convert_json_labels_to_lab
 import shutil
@@ -192,9 +194,9 @@ def get_mir_eval_scores(ref_intervals, ref_labels, est_intervals, est_labels):
     scores.append(precision)
     scores.append(recall)
     
-    ari_score = mir_eval.structure.ari(ref_intervals, ref_labels,
+    rand_score = mir_eval.structure.rand_index(ref_intervals, ref_labels,
                                          est_intervals, est_labels)
-    scores.append(ari_score)
+    scores.append(rand_score)
     
     P05, R05, F05 = mir_eval.boundary.detection(ref_intervals, est_intervals, window=0.5)
     scores.append(F05)
@@ -262,7 +264,7 @@ np.set_printoptions(precision=5, threshold=10000, linewidth=150, suppress=True)
 # <codecell>
 
 score_mean = np.mean(np.dstack([np.round(mirex_scores, 4), np.round(mir_eval_scores, 4)]), axis=-1)
-score_mean = score_max + (score_max == 0)
+score_mean = score_mean + (score_mean == 0)
 
 # <codecell>
 
