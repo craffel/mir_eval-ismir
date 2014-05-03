@@ -261,14 +261,13 @@ np.set_printoptions(precision=5, threshold=10000, linewidth=150, suppress=True)
 
 # <codecell>
 
-score_max = np.mean(np.dstack([np.round(mirex_scores, 3), np.round(mir_eval_scores, 3)]), axis=-1)
-score_max = score_max + (score_max == 0)
+score_mean = np.mean(np.dstack([np.round(mirex_scores, 3), np.round(mir_eval_scores, 3)]), axis=-1)
+score_mean = score_max + (score_max == 0)
 
 # <codecell>
 
 diff = np.round(mirex_scores, 4) - np.round(mir_eval_scores, 4)
 diff[np.less_equal(np.abs(diff), .00010001)] = 0
-for n, (key, score) in enumerate(zip(METRIC_KEYS, np.mean(np.abs(diff)/score_max, axis=0))):
-    print key
-    print score
+for n, (key, score) in enumerate(zip(METRIC_KEYS, np.mean(np.abs(diff)/score_mean, axis=0))):
+    print "{} : {:.5f}".format(key, score)
 
