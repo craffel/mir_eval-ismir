@@ -13,6 +13,7 @@ import shutil
 import csv
 import mir_eval
 import scipy.interpolate
+import numpy as np
 
 # <codecell>
 

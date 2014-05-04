@@ -13,6 +13,8 @@ import glob
 import os
 import csv
 import mir_eval
+import sys
+import numpy as np
 sys.path.append('../')
 import convert_json_labels_to_lab
 import shutil
@@ -153,9 +155,9 @@ for filename in glob.glob(os.path.join(js_dir, '*.js')):
 
 for filename in glob.glob(os.path.join(reference_dir, '*', '*.lab')):
     shutil.move(filename, filename.replace('.lab', '.txt'))
-    
+
 estimated_dir = os.path.join(BASE_DATA_PATH, 'estimated')
-        
+
 for alg_name in ALG_NAMES:
     shutil.move(os.path.join(reference_dir, alg_name), os.path.join(estimated_dir, alg_name))
 
@@ -171,31 +173,31 @@ def get_mir_eval_scores(ref_intervals, ref_labels, est_intervals, est_labels):
     ''' Computes all mir_eval segment metrics and returns them in the order of METRIC_KEYS
     '''
     scores = []
-    ref_intervals, ref_labels = mir_eval.util.adjust_intervals(ref_intervals,
-                                                               ref_labels,
-                                                               t_min=0)
-    est_intervals, est_labels = mir_eval.util.adjust_intervals(est_intervals,
-                                                               est_labels,
-                                                               t_min=0,
-                                                               t_max=ref_intervals.max())
-    
-    S_over, S_under, S_F = mir_eval.structure.nce(ref_intervals, ref_labels,
-                                                  est_intervals, est_labels)
+    ref_intervals_adj, ref_labels_adj = mir_eval.util.adjust_intervals(ref_intervals,
+                                                                       ref_labels,
+                                                                       t_min=0)
+    est_intervals_adj, est_labels_adj = mir_eval.util.adjust_intervals(est_intervals,
+                                                                       est_labels,
+                                                                       t_min=0,
+                                                                       t_max=ref_intervals.max())
+
+    S_over, S_under, S_F = mir_eval.structure.nce(ref_intervals_adj, ref_labels_adj,
+                                                  est_intervals_adj, est_labels_adj)
     scores.append(S_over)
     scores.append(S_under)
-    
-    precision, recall, f = mir_eval.structure.pairwise(ref_intervals,
-                                                       ref_labels,
-                                                       est_intervals,
-                                                       est_labels)
+
+    precision, recall, f = mir_eval.structure.pairwise(ref_intervals_adj,
+                                                       ref_labels_adj,
+                                                       est_intervals_adj,
+                                                       est_labels_adj)
     scores.append(f)
     scores.append(precision)
     scores.append(recall)
-    
-    ari_score = mir_eval.structure.ari(ref_intervals, ref_labels,
-                                         est_intervals, est_labels)
-    scores.append(ari_score)
-    
+
+    rand_score = mir_eval.structure.rand_index(ref_intervals_adj, ref_labels_adj,
+                                               est_intervals_adj, est_labels_adj)
+    scores.append(rand_score)
+
     P05, R05, F05 = mir_eval.boundary.detection(ref_intervals, est_intervals, window=0.5)
     scores.append(F05)
     scores.append(P05)
@@ -204,11 +206,11 @@ def get_mir_eval_scores(ref_intervals, ref_labels, est_intervals, est_labels):
     scores.append(F3)
     scores.append(P3)
     scores.append(R3)
-    
+
     r_to_e, e_to_r = mir_eval.boundary.deviation(ref_intervals, est_intervals)
     scores.append(r_to_e)
     scores.append(e_to_r)
-    
+
     return np.array(scores)
 
 # <codecell>
@@ -230,19 +232,19 @@ def process_one_algorithm(algorithm_directory, skip=False):
                 scores += get_mir_eval_scores(ref_intervals, ref_labels, est_intervals, est_labels)
             except Exception as e:
                 N = N - 1
-                print "Skipping {} because {}".format(os.path.split(reference_segments_file)[1], str(e))
+                print "Skipping {} because {}".format(os.path.split(reference_segments_file)[1], e)
         if N >= 0:
             # Compute mean
             scores /= float(N + 1)
             output_path = os.path.split(estimated_segments_file)[0].replace('estimated', 'mir_eval_scores')
             # Make sure output dir exists
-            if not os.path.exists(output_path):    
+            if not os.path.exists(output_path):
                 os.makedirs(output_path)
             np.savetxt(estimated_segments_file.replace('estimated', 'mir_eval_scores'), scores)
 
 # <codecell>
 
-joblib.Parallel(n_jobs=8)(joblib.delayed(process_one_algorithm)(algo, True) for algo in ALG_NAMES)
+joblib.Parallel(n_jobs=8)(joblib.delayed(process_one_algorithm)(algo) for algo in ALG_NAMES)
 
 # <codecell>
 
@@ -262,7 +264,7 @@ np.set_printoptions(precision=5, threshold=10000, linewidth=150, suppress=True)
 # <codecell>
 
 score_mean = np.mean(np.dstack([np.round(mirex_scores, 4), np.round(mir_eval_scores, 4)]), axis=-1)
-score_mean = score_max + (score_max == 0)
+score_mean = score_mean + (score_mean == 0)
 
 # <codecell>
 
