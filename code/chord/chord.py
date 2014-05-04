@@ -5,18 +5,24 @@ Compare mir_eval against MIREX 2013 chord results
 import json
 import numpy as np
 from mir_eval import chord
+from os.path import basename
 
 # Consists of three aligned lists
 #   referece_files
 #   estimation_files
 #   scores
-result_json_file = "./data/result_sample.json"
+result_json_file = "./data/mirex_results.json"
 with open(result_json_file) as fp:
     results = json.load(fp)
 
 VOCABS = ['root', 'majmin', 'majmin-inv', 'sevenths', 'sevenths-inv']
-MIREX_VOCABS = ["MirexRoot", "MirexMajMinBass", "MirexMajMin",
-                "MirexSeventhsBass", "MirexSevenths"]
+MIREX_VOCABS = [
+    "resultsMirexRoot", "resultsMirexMajMin", "resultsMirexMajMinBass",
+    "resultsMirexSevenths", "resultsMirexSeventhsBass"]
+
+
+def filebase(fpath):
+    return basename(fpath).split('.')[0]
 
 
 def get_mir_eval_scores(reference_files, estimation_files):
@@ -39,18 +45,18 @@ mir_eval_scores = get_mir_eval_scores(results['reference_files'],
                                       results['estimation_files'])
 
 
-def get_mirex_scores(scores):
+def get_mirex_scores(estimation_files, score_object):
     vocab_scores = dict([(k, list()) for k in MIREX_VOCABS])
-    for single_score in scores:
-        for name, score in single_score.items():
-            # Skip weights and errors
-            if name in vocab_scores:
-                vocab_scores[name].append(score)
+    for est_file in estimation_files:
+        algo, filename = est_file.split("/")[-2:]
+        track_base = filebase(filename)
+        for task in MIREX_VOCABS:
+            vocab_scores[task].append(score_object[track_base][algo][task])
 
     return [np.array(vocab_scores[name]) for name in MIREX_VOCABS]
 
 
-mirex_scores = get_mirex_scores(results['scores'])
+mirex_scores = get_mirex_scores(results['estimation_files'], results['scores'])
 
 errors = np.array([np.abs(a - b)
                    for a, b in zip(mir_eval_scores, mirex_scores)])
