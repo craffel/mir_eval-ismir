@@ -69,7 +69,11 @@
 \maketitle
 %
 \begin{abstract}
-Central to the field of MIR research is the evaluation of algorithms used to extract information from music data.  We present \mireval{}, an open source software library which provides a transparent and easy-to-use implementation of the most common metrics used to measure the performance of MIR algorithms.  In the present work, we enumerate the metrics implemented by \mireval{} and quantitatively compare each to an existing implementation.  When the score reported by \mireval{} differs substantially from the reference, we detail the differences in implementation.  We also provide a brief overview of \mireval{}'s architecture, design, and intended use.
+Central to the field of MIR research is the evaluation of algorithms used to extract information from music data.
+We present \mireval{}, an open source software library which provides a transparent and easy-to-use implementation of the most common metrics used to measure the performance of MIR algorithms.
+In the present work, we enumerate the metrics implemented by \mireval{} and quantitatively compare each to an existing implementation.
+When the score reported by \mireval{} differs substantially from the reference, we detail the differences in implementation.
+We also provide a brief overview of \mireval{}'s architecture, design, and intended use.
 \end{abstract}
 %
 \section{Evaluating MIR Algorithms}
@@ -117,9 +121,17 @@ Finally, we discuss and summarize our contributions in Section \ref{sec:discussi
 
 \subsection{Beat Detection}
 
-The aim of a beat detection algorithm is to report the times at which a typical human listener might tap their foot to a piece of music.  As a result, most metrics for evaluating the performance of beat tracking systems involve computing the error between the estimated beat times and some reference list of beat locations.  Many metrics additionally compare the beat sequences at different metric levels in order to deal with the ambiguity of tempo \cite{levy2011improving}.
+The aim of a beat detection algorithm is to report the times at which a typical human listener might tap their foot to a piece of music.
+As a result, most metrics for evaluating the performance of beat tracking systems involve computing the error between the estimated beat times and some reference list of beat locations.
+Many metrics additionally compare the beat sequences at different metric levels in order to deal with the ambiguity of tempo \cite{levy2011improving}.
 
-\mireval{} includes the following metrics for beat tracking, which are defined in detail in \cite{davies2009evaluation}: The \textbf{F-measure} of the beat sequence, where an estimated beat is considered correct if it is sufficiently close to a reference beat; \textbf{Cemgil's score}, which computes the sum of Gaussian errors for each beat; \textbf{Goto's score}, a binary score which is 1 when some specific heuristic criteria are met, \textbf{McKinney's P-score}, which computes the cross-correlation of the estimated and reference beat sequences represented as impulse trains; \textbf{continuity-based scores} which compute the proportion of the beat sequence which is continuously correct; and finally the \textbf{information gain} of the beat error histogram to a uniform distribution.
+\mireval{} includes the following metrics for beat tracking, which are defined in detail in \cite{davies2009evaluation}:
+The \textbf{F-measure} of the beat sequence, where an estimated beat is considered correct if it is sufficiently close to a reference beat;
+\textbf{Cemgil's score}, which computes the sum of Gaussian errors for each beat;
+\textbf{Goto's score}, a binary score which is 1 when some specific heuristic criteria are met;
+\textbf{McKinney's P-score}, which computes the cross-correlation of the estimated and reference beat sequences represented as impulse trains;
+\textbf{continuity-based scores} which compute the proportion of the beat sequence which is continuously correct;
+and finally the \textbf{information gain} of the beat error histogram to a uniform distribution.
 
 \subsection{Chord Recognition}
 
