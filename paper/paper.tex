@@ -92,7 +92,7 @@ Over time, certain metrics have become standard for each task, so that the perfo
 Unfortunately, this comparison can be confounded by the fact that the actual implementation of the metric can affect the scores it produces.
 
 % MIREX is the standard, but it's not community-developed, not transparent, not well-documented, uses multiple languages, is coupled to NEMA, not easy to use, dependencies, not used outside of MIREX, etc.
-For the past 10 years, the yearly Music Information Retrieval EXchange (MIREX) has provided setting in which different MIR algorithms are compared over common datasets \cite{downie2008music}.
+For the past 10 years, the yearly Music Information Retrieval Evaluation eXchange (MIREX) has provided setting in which different MIR algorithms are compared over common datasets \cite{downie2008music}.
 By providing a standardized shared-task setting to track progress, MIREX has proven to be critically useful in the evolution of MIR research.
 MIREX relies on the Networked Environment for Music Analysis (NEMA) \cite{west2010networked}, a large-scale system which includes exhaustive functionality for evaluating, summarizing, and displaying evaluation results.
 The NEMA codebase includes multiple programming languages and dependencies (including proprietary ones, e.g. MATLAB) so compiling and running it for research uses is nontrivial.
@@ -459,7 +459,11 @@ onto a common time-grid. Assuming the original timestamps of both sequences
 correspond to the \textit{center} of each analysis frame (as they should),
 using $1^{st}$-order rather than $0^{th}$-order interpolation means the results
 returned by \mireval{} are lower-bounded by the MIREX results and are, in our
-view, more accurate.
+view, more accurate. By default, the estimate is resampled using the reference's
+time grid so that the reference can be used without any modification.
+Alternatively, the user can specify a hop size, in which case both
+reference and estimate are resampled onto the new time-grid defined by the hop
+size.
 
 \subsection{Onset Detection}
 
