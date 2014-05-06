@@ -12,6 +12,7 @@
 %\usepackage{authblk}
 \usepackage{booktabs}
 
+\usepackage{url}
 \usepackage{microtype}
 
 \def\eg{\emph{e.g.}}
@@ -114,9 +115,18 @@ Finally, we discuss and summarize our contributions in Section \ref{sec:discussi
 \section{\mireval{}'s architecture}
 \label{sec:architecture}
 
-% Task submodules, one function per metric
-% io submodule for loading in data
-% Evaluators
+\mireval{} is a Python library which includes metrics for the following tasks: Beat detection, chord recognition, pattern discovery, structural segmentation, melody extraction, onset detection, and source separation.
+Each task is given its own submodule (e.g. \mireval{}\texttt{.beat}), and each metric is defined as a separate function in each submodule (e.g. \mireval{}\texttt{.beat.f\char`_measure}).
+Each task submodule also includes common data pre-processing steps for the task.
+Every metric function includes detailed documentation, example usage, input validation, and references to the original paper which defined the metric.
+\mireval{} also includes a submodule \texttt{io} which provides convenience functions for loading in task-specific data from common file formats.
+For readability, all code follows the PEP8 style guide\cite{van2001pep}.
+\mireval{}'s only dependencies outside of the Python standard library are the free and open-source SciPy/Numpy\cite{jones2001scipy} and scikit-learn\cite{pedregosa2011scikit} Python libraries.
+
+In order to simplify the usage of \mireval{}, it is packaged with a set of ``evaluator'' scripts, one for each task.
+These scripts include all code necessary to load in data, pre-process it, and compute all metrics for a given task.
+The evaluators allow for \mireval{} to be called directly from the command line so that no knowledge of Python is necessary.
+They are also distributed as executables for Windows and Mac OS X, so that \mireval{} may be used with no dependencies installed.
 
 \section{Tasks included in \mireval{}}
 \label{sec:tasks}
