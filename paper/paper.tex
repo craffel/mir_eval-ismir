@@ -21,10 +21,10 @@
 \def\given{\ensuremath{|~}}
 \def\defeq{\ensuremath{:=}}
 
-\def\mireval{\texttt{mir\_eval}}
+\def\mireval{\texttt{mir\char`_eval}}
 
 % ------
-\title{mir\_eval}
+\title{\mireval{}}
 
 % Single address
 % To use with only one author or several with the same address
@@ -69,7 +69,7 @@
 \maketitle
 %
 \begin{abstract}
-Central to the field of MIR research is the evaluation of algorithms used to extract information from music data.  We present mir\_eval, an open source software library which provides a transparent and easy-to-use implementation of the most common metrics used to measure the performance of MIR algorithms.  In the present work, we enumerate the metrics implemented by mir\_eval and quantitatively compare each to an existing implementation.  When the score reported by mir\_eval differs substantially from the reference, we detail the differences in implementation.  We also provide a brief overview of mir\_eval's architecture, design, and intended use.
+Central to the field of MIR research is the evaluation of algorithms used to extract information from music data.  We present \mireval{}, an open source software library which provides a transparent and easy-to-use implementation of the most common metrics used to measure the performance of MIR algorithms.  In the present work, we enumerate the metrics implemented by \mireval{} and quantitatively compare each to an existing implementation.  When the score reported by \mireval{} differs substantially from the reference, we detail the differences in implementation.  We also provide a brief overview of \mireval{}'s architecture, design, and intended use.
 \end{abstract}
 %
 \section{Evaluating MIR Algorithms}
@@ -99,27 +99,27 @@ These factors motivate the development of a standardized software package which 
 Such a package should be straightforward to use and well-documented so that it can be easily adopted and understood by MIR researchers.
 In addition, it should be community-developed and transparently implemented so that all design decisions are well-reasoned and easily understood.
 
-Motivated by these criteria, we present \mireval, a software package which intends to provide an easy and standardized way to evaluate MIR systems.
-The present work first discusses the architecture and design of \mireval in Section \ref{sec:architecture}.
-In Section \ref{sec:tasks}, we describe all of the tasks covered by \mireval and the metrics included.
-In order to validate our implementation decisions, we compare \mireval to existing software in Section \ref{sec:comparison}.
+Motivated by these criteria, we present \mireval{}, a software package which intends to provide an easy and standardized way to evaluate MIR systems.
+The present work first discusses the architecture and design of \mireval{} in Section \ref{sec:architecture}.
+In Section \ref{sec:tasks}, we describe all of the tasks covered by \mireval{} and the metrics included.
+In order to validate our implementation decisions, we compare \mireval{} to existing software in Section \ref{sec:comparison}.
 Finally, we discuss and summarize our contributions in Section \ref{sec:discussion}.
 
-\section{mir\_eval's architecture}
+\section{\mireval{}'s architecture}
 \label{sec:architecture}
 
 % Task submodules, one function per metric
 % io submodule for loading in data
 % Evaluators
 
-\section{Tasks included in mir\_eval}
+\section{Tasks included in \mireval{}}
 \label{sec:tasks}
 
 \subsection{Beat Detection}
 
 The aim of a beat detection algorithm is to report the times at which a typical human listener might tap their foot to a piece of music.  As a result, most metrics for evaluating the performance of beat tracking systems involve computing the error between the estimated beat times and some reference list of beat locations.  Many metrics additionally compare the beat sequences at different metric levels in order to deal with the ambiguity of tempo \cite{levy2011improving}.
 
-mir\_eval includes the following metrics for beat tracking, which are defined in detail in \cite{davies2009evaluation}: The \textbf{F-measure} of the beat sequence, where an estimated beat is considered correct if it is sufficiently close to a reference beat; \textbf{Cemgil's score}, which computes the sum of Gaussian errors for each beat; \textbf{Goto's score}, a binary score which is 1 when some specific heuristic criteria are met, \textbf{McKinney's P-score}, which computes the cross-correlation of the estimated and reference beat sequences represented as impulse trains; \textbf{continuity-based scores} which compute the proportion of the beat sequence which is continuously correct; and finally the \textbf{information gain} of the beat error histogram to a uniform distribution.
+\mireval{} includes the following metrics for beat tracking, which are defined in detail in \cite{davies2009evaluation}: The \textbf{F-measure} of the beat sequence, where an estimated beat is considered correct if it is sufficiently close to a reference beat; \textbf{Cemgil's score}, which computes the sum of Gaussian errors for each beat; \textbf{Goto's score}, a binary score which is 1 when some specific heuristic criteria are met, \textbf{McKinney's P-score}, which computes the cross-correlation of the estimated and reference beat sequences represented as impulse trains; \textbf{continuity-based scores} which compute the proportion of the beat sequence which is continuously correct; and finally the \textbf{information gain} of the beat error histogram to a uniform distribution.
 
 \subsection{Chord Recognition}
 
@@ -222,7 +222,7 @@ into intervals ${(s_i, t_i)}_{i=1}^m$, where $s_0=0$ denotes the beginning of tr
 $t_m$ denotes the end of the track, and $t_i = s_{i+1}$.
 Structural annotation additionally requires that each interval be assigned a label $y_i$.
 
-\mireval implements the following MIREX-compatible boundary detection metrics:
+\mireval{} implements the following MIREX-compatible boundary detection metrics:
 \begin{description}
 \item[Boundary detection:] precision, recall, and F-measure for detecting boundary
 events within a tolerance window $w\in \{0.5, 3\}$~\cite{turnbull2007supervised};
@@ -429,12 +429,12 @@ difference between the source and target time grids. In particular, it can
 result in artificially low scores for sequences with rapidly changing pitch
 values, such as opera singing with deep vibrato. 
 
-For this reason, the melody evaluator in mir\_eval uses $1^{st}$-order (linear)
+For this reason, the melody evaluator in \mireval{} uses $1^{st}$-order (linear)
 interpolation by default in order to map the reference and estimate sequences
 onto a common time-grid. Assuming the original timestamps of both sequences
 correspond to the \textit{center} of each analysis frame (as they should),
 using $1^{st}$-order rather than $0^{th}$-order interpolation means the results
-returned by mir\_eval are lower-bounded by the MIREX results and are, in our
+returned by \mireval{} are lower-bounded by the MIREX results and are, in our
 view, more accurate.
 
 \subsection{Onset Detection}
