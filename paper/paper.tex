@@ -12,14 +12,16 @@
 %\usepackage{authblk}
 \usepackage{booktabs}
 
-\def\eg{\emph{e.g.\/}}
-\def\ie{\emph{i.e.\/}}
-\def\etc{\emph{etc.\/}}
-\def\etal{\emph{et al.\/}}
+\def\eg{\emph{e.g.}}
+\def\ie{\emph{i.e.}}
+\def\etc{\emph{etc.}}
+\def\etal{\emph{et al.}}
 \DeclareMathOperator*{\median}{median}
 \newcommand{\ind}[1]{\ensuremath{\left\llbracket#1\right\rrbracket}}
 \def\given{\ensuremath{|~}}
 \def\defeq{\ensuremath{:=}}
+
+\def\mireval{\texttt{mir\_eval}}
 
 % ------
 \title{mir\_eval}
@@ -196,72 +198,94 @@ into intervals ${(s_i, t_i)}_{i=1}^m$, where $s_0=0$ denotes the beginning of tr
 $t_m$ denotes the end of the track, and $t_i = s_{i+1}$.
 Structural annotation additionally requires that each interval be assigned a label $y_i$.
 
+\mireval implements the following MIREX-compatible boundary detection metrics:
+\begin{description}
+\item[Boundary detection:] precision, recall, and F-measure for detecting boundary
+events within a tolerance window $w\in \{0.5, 3\}$~\cite{turnbull2007supervised};
+\item[Boundary deviation:] median absolute time difference from a reference boundary
+to its nearest estimated boundary, and vice versa~\cite{turnbull2007supervised},
+\end{description}
+and the following structure annotation metrics
+\begin{description}
+\item[Pairwise classification:] precision, recall, and F-measure for classifying pairs
+of sampled time instants as belonging to the same structural
+component~\cite{levy2008structural};
+\item[Rand index:\footnote{The MIREX results page refers to Rand index as ``random
+clustering index''.}] reference and estimated annotations are sampled uniformly
+throughout the track, and the induced clusterings are compared by the Rand index
+~\cite{rand1971objective};
+\item[Normalized conditional entropy:] reference and estimated labels are sampled
+uniformly, and interpreted as samples of random variables $Y_R, Y_E$, which are
+computed by estimating the conditional entropy of $Y_R$ given $Y_E$
+(\emph{under-segmentation}) and $Y_E$ given $Y_R$ 
+(\emph{over-segmentation})~\cite{lukashevich2008towards}.
+\end{description}
 
-\subsubsection{Boundary annotation}
+% \subsubsection{Boundary annotation}
 
-Within boundary annotation, there are two categories of evaluation metrics: detection,
-and deviation~\cite{turnbull2007supervised}.  
+% Within boundary annotation, there are two categories of evaluation metrics: detection,
+% and deviation~\cite{turnbull2007supervised}.  
 
-\emph{Boundary detection} measures the precision, recall, and F-measure of boundary prediction within a window.
-Let $B^R$ ($B^E$) denote the set of unique interval boundaries in the reference (estimated) annotation, and let $W$ denote 
-a window, typically either $0.5$s or $3.0$s.  
-A \emph{hit} is defined as a pair $b_e \in B^E$, $b_r \in B^R$ such that $|b_e - b_r|
-\leq W$.  
+% \emph{Boundary detection} measures the precision, recall, and F-measure of boundary prediction within a window.
+% Let $B^R$ ($B^E$) denote the set of unique interval boundaries in the reference (estimated) annotation, and let $W$ denote 
+% a window, typically either $0.5$s or $3.0$s.  
+% A \emph{hit} is defined as a pair $b_e \in B^E$, $b_r \in B^R$ such that $|b_e - b_r|
+% \leq W$.  
 
-No estimated boundary is counted as a hit for more than one reference boundary, and vice versa.
-This is accomplished by computing a maximum bipartite matching $H_W$ between $B^E$ and $B^R$ (subject to the window constraint $W$)
-using the Hopcroft-Karp algorithm~\cite{hopcroft1973n}.  This deviates from the greedy heuristic used in the MIREX
-implementation, but it is guaranteed to produce a correct matching.  Precision and recall at window $W$ are defined as
-\begin{align}
-P_W(B^R, B^E) &\defeq \frac{|H_W|}{|B^E|}\\
-R_W(B^R, B^E) &\defeq \frac{|H_W|}{|B^R|},
-\end{align}
-and the corresponding F-measure is defined by taking their harmonic mean.
+% No estimated boundary is counted as a hit for more than one reference boundary, and vice versa.
+% This is accomplished by computing a maximum bipartite matching $H_W$ between $B^E$ and $B^R$ (subject to the window constraint $W$)
+% using the Hopcroft-Karp algorithm~\cite{hopcroft1973n}.  This deviates from the greedy heuristic used in the MIREX
+% implementation, but it is guaranteed to produce a correct matching.  Precision and recall at window $W$ are defined as
+% \begin{align}
+% P_W(B^R, B^E) &\defeq \frac{|H_W|}{|B^E|}\\
+% R_W(B^R, B^E) &\defeq \frac{|H_W|}{|B^R|},
+% \end{align}
+% and the corresponding F-measure is defined by taking their harmonic mean.
 
-\emph{Boundary deviation} is comprised of two scores, which measure the median time between a reference boundary and its nearest corresponding estimated boundary, and vice versa.
-These two metrics have previously been defined as \emph{true-to-predicted} (T-to-P) and \emph{predicted-to-true} (P-to-T), though in the terminology of this document, we use 
-alternative naming of \emph{reference-to-estimated} (R-to-E) and \emph{estimated-to-reference} (E-to-R):
-\begin{align}
-\text{R-to-E}(B^R, B^E) &\defeq \displaystyle\median_{b_r \in B^R} \min_{b_e \in B^E} \left|b_r - b_e\right|\\
-\text{E-to-R}(B^R, B^E) &\defeq \displaystyle\median_{b_e \in B^E} \min_{b_r \in B^R} \left|b_r - b_e\right|.
-\end{align}
+% \emph{Boundary deviation} is comprised of two scores, which measure the median time between a reference boundary and its nearest corresponding estimated boundary, and vice versa.
+% These two metrics have previously been defined as \emph{true-to-predicted} (T-to-P) and \emph{predicted-to-true} (P-to-T), though in the terminology of this document, we use 
+% alternative naming of \emph{reference-to-estimated} (R-to-E) and \emph{estimated-to-reference} (E-to-R):
+% \begin{align}
+% \text{R-to-E}(B^R, B^E) &\defeq \displaystyle\median_{b_r \in B^R} \min_{b_e \in B^E} \left|b_r - b_e\right|\\
+% \text{E-to-R}(B^R, B^E) &\defeq \displaystyle\median_{b_e \in B^E} \min_{b_r \in B^R} \left|b_r - b_e\right|.
+% \end{align}
 
 
-\subsubsection{Structural annotation}
-Two standard methods of evaluating structural annotation accuracy are \emph{pairwise classification}~\cite{levy2008structural}
-and conditional entropy~\cite{lukashevich2008towards}.  In both methods, a collection of samples are generated by sampling the
-labels at time steps between $0$ and the track duration.  The $i$th sample is assigned a reference label $y_i^R$ and
-and estimated label $y_i^E$.  Our implementation follows the MIREX guidelines, and generates samples at a default rate of 10Hz.
+% \subsubsection{Structural annotation}
+% Two standard methods of evaluating structural annotation accuracy are \emph{pairwise classification}~\cite{levy2008structural}
+% and conditional entropy~\cite{lukashevich2008towards}.  In both methods, a collection of samples are generated by sampling the
+% labels at time steps between $0$ and the track duration.  The $i$th sample is assigned a reference label $y_i^R$ and
+% and estimated label $y_i^E$.  Our implementation follows the MIREX guidelines, and generates samples at a default rate of 10Hz.
 
-Reference and estimated annotations must span identical time durations for annotation metrics to be well-defined.
-This is accomplished in our implementation by trimming or padding the estimated annotation to exactly match the start and end-times
-reported in the reference annotation, and synthesizing unique labels if necessary.
+% Reference and estimated annotations must span identical time durations for annotation metrics to be well-defined.
+% This is accomplished in our implementation by trimming or padding the estimated annotation to exactly match the start and end-times
+% reported in the reference annotation, and synthesizing unique labels if necessary.
 
-Given the labels for the samples $\{(y_i^R, y_i^E)\}_{i=1}^n$, the \emph{pairwise classification} metrics are defined as precision,
-recall, and F-measure of label agreement over all unique, distinct pairs $i \neq j$.  
-Let $A_R = \{ \{i, j\} \given y_i^R = y_j^R\}$ denote the set of similarly labeled frames in the reference, with $A_E$ defined
-analogously for the estimation.  Precision and recall are defined as
-\begin{align}
-P_\text{pair} &\defeq \frac{ |A_E \cap A_R| }{ |A_E| }\\
-R_\text{pair} &\defeq \frac{ |A_E \cap A_R| }{ |A_R| }.
-\end{align}
+% Given the labels for the samples $\{(y_i^R, y_i^E)\}_{i=1}^n$, the \emph{pairwise classification} metrics are defined as precision,
+% recall, and F-measure of label agreement over all unique, distinct pairs $i \neq j$.  
+% Let $A_R = \{ \{i, j\} \given y_i^R = y_j^R\}$ denote the set of similarly labeled frames in the reference, with $A_E$ defined
+% analogously for the estimation.  Precision and recall are defined as
+% \begin{align}
+% P_\text{pair} &\defeq \frac{ |A_E \cap A_R| }{ |A_E| }\\
+% R_\text{pair} &\defeq \frac{ |A_E \cap A_R| }{ |A_R| }.
+% \end{align}
 
-\emph{Normalized conditional entropy} scores are computed by estimating the conditional entropy of the estimated label $y^E$ given
-the reference label $y^R$ and vice versa.  Let $P$ denote the empirical joint distribution over reference and estimated labels:
-\begin{align}
-P_{ij} &\propto \left|\{t \given y_t^R = i \wedge y_t^E = j\}\right|.
-\end{align}
-Let $Y^R$ and $Y^E$ denote random variables corresponding to the reference and estimated label for an arbitrary sample.
-The conditional entropies $H\left(Y^E \given Y^R\right)$ and $H\left(Y^R \given Y^E\right)$ are estimated from the 
-empirical marginals ${p_i^R = \sum_j P_{ij}}$ and ${p_j^E = \sum_i P_{ij}}$ as described by 
-Lukashevich~\cite{lukashevich2008towards}.
+% \emph{Normalized conditional entropy} scores are computed by estimating the conditional entropy of the estimated label $y^E$ given
+% the reference label $y^R$ and vice versa.  Let $P$ denote the empirical joint distribution over reference and estimated labels:
+% \begin{align}
+% P_{ij} &\propto \left|\{t \given y_t^R = i \wedge y_t^E = j\}\right|.
+% \end{align}
+% Let $Y^R$ and $Y^E$ denote random variables corresponding to the reference and estimated label for an arbitrary sample.
+% The conditional entropies $H\left(Y^E \given Y^R\right)$ and $H\left(Y^R \given Y^E\right)$ are estimated from the 
+% empirical marginals ${p_i^R = \sum_j P_{ij}}$ and ${p_j^E = \sum_i P_{ij}}$ as described by 
+% Lukashevich~\cite{lukashevich2008towards}.
 
-The final scores are defined as \emph{over-segmentation} ($S_\text{O}$) and \emph{under-segmentation} ($S_\text{U}$):
-\begin{align}
-S_\text{O} &\defeq 1 - \frac{H(E \given R)}{\log_2 |\ell^E|}\\
-S_\text{U} &\defeq 1 - \frac{H(R \given E)}{\log_2 |\ell^R|},
-\end{align}
-where $\ell^R$ and $\ell^E$ denote the sets of unique label values given in the reference and estimation.
+% The final scores are defined as \emph{over-segmentation} ($S_\text{O}$) and \emph{under-segmentation} ($S_\text{U}$):
+% \begin{align}
+% S_\text{O} &\defeq 1 - \frac{H(E \given R)}{\log_2 |\ell^E|}\\
+% S_\text{U} &\defeq 1 - \frac{H(R \given E)}{\log_2 |\ell^R|},
+% \end{align}
+% where $\ell^R$ and $\ell^E$ denote the sets of unique label values given in the reference and estimation.
 
 \subsection{Melody Extraction}
 \subsubsection{Task definition}
