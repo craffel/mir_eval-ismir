@@ -27,7 +27,7 @@
 \def\mireval{\texttt{mir\char`_eval}}
 
 % ------
-\title{\mireval{}}
+\title{\mireval{}: A Transparent Codebase for Evaluating MIR}
 
 % Single address
 % To use with only one author or several with the same address
@@ -74,41 +74,41 @@
 \begin{abstract}
 Central to the field of MIR research is the evaluation of algorithms used to extract information from music data.
 We present \mireval{}, an open source software library which provides a transparent and easy-to-use implementation of the most common metrics used to measure the performance of MIR algorithms.
-In the present work, we enumerate the metrics implemented by \mireval{} and quantitatively compare each to an existing implementation.
-When the score reported by \mireval{} differs substantially from the reference, we detail the differences in implementation.
+In this paper, we enumerate the metrics implemented by \mireval{} and quantitatively compare each to  existing implementations.
+When the scores reported by \mireval{} differ substantially from the reference, we diagnose the differences in implementation.
 We also provide a brief overview of \mireval{}'s architecture, design, and intended use.
 \end{abstract}
 %
 \section{Evaluating MIR Algorithms}
 
-Many tasks in the field of Music Information Retrieval (MIR) involve the development of systems which can automatically produce semantic information about a piece of music.
-The effectiveness of these systems is typically determined based on how similarly they act to a human listener \cite{downie2003toward}.
-A straightforward way to determine a system's effectiveness would be for a human to study the output produced by the system and judge its correctness.
-However, this process is inherently subjective and also extremely time-consuming when evaluating a system's output over a large corpus of music.
+Much of the research in Music Information Retrieval (MIR) involves the development of systems that process raw music data to produce semantic information.
+The goal of these systems is frequently defined as attempting to duplicate the performance of a human listener given the same task \cite{downie2003toward}.
+A natural way to determine a system's effectiveness might be for a human to study the output produced by the system and judge its correctness.
+However, this would yield only subjective ratings, and would also be extremely time-consuming when evaluating a system's output over a large corpus of music.
 
-As a result, metrics have been defined for each task which provide a well-defined way of computing a score which denotes the correctness of a system's output.
+Instead, objective metrics are developed to provide a well-defined way of computing a score which indicates each system's output's correctness.
 These metrics typically involve a heuristically-motivated comparison of the system's output to a reference which is known to be correct.
 Over time, certain metrics have become standard for each task, so that the performance of systems created by different researchers can be compared when they are evaluated over the same dataset \cite{downie2003toward}.
-Unfortunately, this comparison can be confounded by the fact that the actual implementation of the metric can affect the scores it produces.
+Unfortunately, this comparison can be confounded by small details of the implementations or procedures that can have disproportionate impacts on the resulting scores.
 
 % MIREX is the standard, but it's not community-developed, not transparent, not well-documented, uses multiple languages, is coupled to NEMA, not easy to use, dependencies, not used outside of MIREX, etc.
-For the past 10 years, the yearly Music Information Retrieval Evaluation eXchange (MIREX) has provided setting in which different MIR algorithms are compared over common datasets \cite{downie2008music}.
-By providing a standardized shared-task setting to track progress, MIREX has proven to be critically useful in the evolution of MIR research.
-MIREX relies on the Networked Environment for Music Analysis (NEMA) \cite{west2010networked}, a large-scale system which includes exhaustive functionality for evaluating, summarizing, and displaying evaluation results.
-The NEMA codebase includes multiple programming languages and dependencies (including proprietary ones, e.g. MATLAB) so compiling and running it for research uses is nontrivial.
-
-Due to its scale, characteristics, and intended use, the NEMA system is rarely used for evaluating MIR algorithms outside of the setting of MIREX \cite{downie2008music}.
-As a result, researchers typically create their own implementations of common metrics for evaluating their algorithms.
-These implementations are not standardized, and even worse, may contain bugs.
-Both of these factors can confound comparison of different systems.
+For the past 10 years, the yearly Music Information Retrieval Evaluation eXchange (MIREX) has been a forum for comparing MIR algorithms over common datasets \cite{downie2008music}.
+By providing a standardized shared-task setting, MIREX has become critically useful to track progress in MIR research.
+MIREX is built upon the Networked Environment for Music Analysis (NEMA) \cite{west2010networked}, a large-scale system which includes exhaustive functionality for evaluating, summarizing, and displaying evaluation results.
+The NEMA codebase includes multiple programming languages and dependencies (some of which, e.g. Matlab, are proprietary) so compiling and running it at individual sites is nontrivial. 
+%
+%Due to its scale, characteristics, and intended use, 
+In consequence, the NEMA system is rarely used for evaluating MIR algorithms outside of the setting of MIREX \cite{downie2008music}.
+Instead, researchers typically create their own implementations of common metrics for evaluating their algorithms.
+These implementations are thus not standardized, and may contain differences in details, or even bugs, that confound comparisons.
 
 These factors motivate the development of a standardized software package which implements the most common metrics used to evaluate MIR systems.
-Such a package should be straightforward to use and well-documented so that it can be easily adopted and understood by MIR researchers.
-In addition, it should be community-developed and transparently implemented so that all design decisions are well-reasoned and easily understood.
+Such a package should be straightforward to use and well-documented so that it 
+presents a preferable alternative to in-house development for MIR researchers.
+In addition, it should be community-developed and transparently implemented so that all design decisions are easily understood and open to discussion and improvement.
 
 Following these criteria, we present \mireval{}, a software package which intends to provide an easy and standardized way to evaluate MIR systems.
-The present work first discusses the architecture and design of \mireval{} in Section \ref{sec:architecture}.
-In Section \ref{sec:tasks}, we describe all of the tasks covered by \mireval{} and the metrics included.
+This paper first discusses the architecture and design of \mireval{} in Section \ref{sec:architecture}, then, in Section \ref{sec:tasks}, describes all of the tasks covered by \mireval{} and the metrics included.
 In order to validate our implementation decisions, we compare \mireval{} to existing software in Section \ref{sec:comparison}.
 Finally, we discuss and summarize our contributions in Section \ref{sec:discussion}.
 
