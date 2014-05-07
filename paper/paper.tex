@@ -475,8 +475,22 @@ The goal of an onset detection algorithm is to automatically determine when note
 \section{Comparison to Existing Implementations}
 \label{sec:comparison}
 
-% Compared each mir_eval task to an existing implementation
-% Parameterized the same wherever possible
+In order to validate the design choices made in \mireval{}, it is useful to compare the scores it reports to those reported by an existing evaluation system.
+Beyond pinpointing intentional differences in implementation, this process can also help find and fix bugs in either \mireval{} or the system it is being compared to.
+
+For each task covered by \mireval{}, we obtained a collection of reference and estimated annotations and computed a score for each metric using \mireval{} and the evaluation system being compared to.
+In order to facilitate comparison, we ensured that all parameters and pre-processing used by \mireval{} were equivalent to the reference system unless otherwise explicitly noted.
+Then, for each reported score, we computed the relative change between the scores as their absolute difference divided by their mean, or
+$$
+\frac{|s_m - s_c|}{(s_m + s_c)/2}
+$$
+where $s_m$ is the score reported by \mireval{}, and $s_c$ is the score being compared to.
+We then computed the average relative change across all examples in our dataset for each score.
+
+The resulting average relative change for each metric is presented in Table \ref{tab:comparison}.
+For may of the metrics, the average relative change is close to a tenth of a percent, indicating that \mireval{} is equivalent up to rounding/precision errors.
+In the following sections, we enumerate the existing system being compared to, the collections over which these scores were computed, and any known implementation differences which account for the larger average relative changes.
+
 
 % Beat: Compared against MIREX 2013
 % Chord: Compared against ??
