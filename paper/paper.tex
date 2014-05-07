@@ -486,13 +486,44 @@ Then, for each reported score, we computed the relative change between the score
 $$
 \frac{|s_m - s_c|}{(s_m + s_c)/2}
 $$
-where $s_m$ is the score reported by \mireval{}, and $s_c$ is the score being compared to.
-We then computed the average relative change across all examples in our dataset for each score.
+where $s_m$ is the score reported by \mireval{} and $s_c$ is the score being compared to.
+We then computed the average relative change across all examples in the obtained dataset for each score.
+
+For the beat detection, chord recognition, structural segmentation, and onset detection tasks, MIREX releases the the output of submitted algorithms, the ground truth annotations, and the reported score for each example in each data set.
+We therefore can directly compare \mireval{} to MIREX for these tasks by collecting all reference and estimated annotations, computing each metric for each example, and comparing the result to the score reported by MIREX.
+We chose to compare against the results reported in MIREX 2013 for all tasks.
+
+In contrast to the tasks above, MIREX does not release ground truth annotations or algorithm output for the melody extraction and pattern discovery tasks.
+As a result, we compared \mireval{}'s output on smaller development datasets for these tasks.
+For melody extraction, the ADC2004 dataset used by MIREX is publicly available.
+We performed melody extraction using the ``SG2'' algorithm evaluated in 2011 \cite{salamon2011melody} and compared \mireval{}'s reported scores to those of MIREX.
+For pattern discovery, we used the development dataset released by Collins \cite{Collins2013} and used the algorithms submitted by Nieto and Farbood \cite{nieto2013discovery} for MIREX 2013 to produce estimated patterns.
+We evaluated the estimated patterns using the MATLAB code released by Collins \cite{Collins2013}.
+The number of algorithms, examples, and total number of scores for all tasks are summarized in Table \ref{tab:nexamples}.
 
 The resulting average relative change for each metric is presented in Table \ref{tab:comparison}.
-For may of the metrics, the average relative change is close to a tenth of a percent, indicating that \mireval{} is equivalent up to rounding/precision errors.
-In the following sections, we enumerate the existing system being compared to, the collections over which these scores were computed, and any known implementation differences which account for the larger average relative changes.
+For may of the metrics, the average relative change is less than a few tenths of a percent, indicating that \mireval{} is equivalent up to rounding/precision errors.
+In the following sections, we enumerate the known implementation differences which account for the larger average relative changes.
 
+\subsection{Non-greedy matching of events}
+
+Brian writes this section
+
+\subsection{McKinney's P-score}
+
+When computing McKinney's P-score \cite{davies2009evaluation}, the beat sequences are first converted to impulse trains sampled at a 10 millisecond resolution.
+Because this sampling involves quantizing the beat times to a 10ms grid, shifting both beat sequences by a constant offset can result in substantial changes in the P-score.
+As a result, In \mireval{}, we normalize the beat sequences by subtracting from each reference and estimated beat location the minimum beat location in either series.
+In this way, the smallest beat in the estimated and reference beat sequences is always $0$ and the metric remains the same even when both beat sequences have a constant offset applied.
+This is not done in MIREX (which uses the Beat Evaluation Toolbox \cite{davies2009evaluation}), and as a result, we observe a considerable average relative change for the P-score metric.
+
+\subsection{Information Gain}
+
+The Information Gain metric \cite{davies2009evaluation} involves the computation a histogram of the per-beat errors.
+The Beat Evaluation Toolbox uses a non-uniform histogram binning where the first and last bins are 1/2 of the width of the rest of the bins.
+It also uses one more bin than is specified by the user.
+\mireval{} uses a standard uniformly-binned histogram with as many bins as are specified by the user.
+As a result, the Information Gain score reported by \mireval{} differs substantially from that reported by MIREX.
 
 % Beat: Compared against MIREX 2013
 % Chord: Compared against ??
@@ -534,8 +565,8 @@ In the following sections, we enumerate the existing system being compared to, t
  \multicolumn{3}{ c }{Beat} & \multicolumn{7}{ c }{Pattern}\\
   \cmidrule(lr){1-3}
   \cmidrule(lr){4-10}
-  AMLc       & AMLt       & D (bits) & Pat & Pat & Pat & Pat & Pat & Pat & Pat \\
-  0.137\% &    0.139\% &   10.166\% &  ??? & ??? & ??? & ??? & ??? & ??? & ???\\
+  AMLc       & AMLt       & In. Gain & Pat & Pat & Pat & Pat & Pat & Pat & Pat \\
+  0.137\% &    0.139\% &   9.174\% &  ??? & ??? & ??? & ??? & ??? & ??? & ???\\
   \midrule
  \multicolumn{10}{ c }{Pattern}\\
   \cmidrule(lr){1-10}
@@ -555,6 +586,8 @@ In the following sections, we enumerate the existing system being compared to, t
 
 \section{Discussion}
 \label{sec:discussion}
+
+% Community development is crucial
 
 \bibliography{mir_eval}
 
