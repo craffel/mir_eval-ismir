@@ -516,9 +516,7 @@ This is not done in MIREX (which uses the Beat Evaluation Toolbox \cite{davies20
 \subsection{Information Gain}
 
 The Information Gain metric \cite{davies2009evaluation} involves the computation a histogram of the per-beat errors.
-The Beat Evaluation Toolbox uses a non-uniform histogram binning where the first and last bins are 1/2 of the width of the rest of the bins.
-It also uses one more bin than is specified by the user.
-\mireval{} uses a standard uniformly-binned histogram with as many bins as are specified by the user.
+The Beat Evaluation Toolbox uses a non-uniform histogram binning where the first, second and last bins are smaller than the rest of the bins while \mireval{} uses a standard uniformly-binned histogram.
 As a result, the Information Gain score reported by \mireval{} differs substantially from that reported by MIREX.
 
 % Beat: Compared against MIREX 2013
