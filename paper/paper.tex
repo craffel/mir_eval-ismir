@@ -1,6 +1,6 @@
-% Add table captions
 % Add conclusion
 % Fill in missing segmentation explanations 
+% Switch chord footnote to ref
 
 
 % -----------------------------------------------
@@ -343,34 +343,6 @@ This is accomplished by computing a maximum bipartite matching between the estim
 This explains the observed discrepancy between \mireval{} and MIREX for each of these metrics.
 In all cases where the metric differs, \mireval{} reports a higher score, indicating that the greedy matching strategy was suboptimal.
 
-\subsection{Segment Boundary Deviation}
-
-% Because when numpy computes the median of an even number of numbers, it computes the mean of the two middle values.
-
-\subsection{Segment Frame Clustering}
-
-% Frame sampling - MIREX does two different things, we do one thing consistently
-% For Rand index and pairwise classification, MIREX uses a fixed sampling but at different rates.
-% In the conditional entropy scores, it uses a fixed number of samples.
-% In \mireval{}, we use the same fixed sampling rate for all metrics.
-
-% In MIREX, the range over which frames are sampled depends on both the reference and the estimate intervals.
-% In \mireval{}, the sampling is always done with respect to the reference to ensure fair comparison across multiple estimates for the same reference.
-
-% This additionally requires that estimated intervals are adjusted to span the exact duration specified by the reference intervals.
-% In \mireval{}, this is done by adding synthetic intervals when the estimated intervals do not span the reference intervals or otherwise trimming estimated intervals.
-
-%this affects___
-
-
-\subsection{Segment Normalized Conditional Entropy Scores}
-
-% When adding intervals, we ensure that the labels do not conflict with existing labels in the estimated annotation.
-% This has the effect of changing the normalization constant in the normalized conditional entropy scores.
-
-% When there's only one label, the normalized conditional entropy scores are not well defined.
-% In MIREX, they are assigned a score of 1 in this case; in \mireval{} we assign a score of 0.
-
 \subsection{McKinney's P-score}
 
 When computing McKinney's P-score \cite{davies2009evaluation}, the beat sequences are first converted to impulse trains sampled at a 10 millisecond resolution.
@@ -385,7 +357,33 @@ The Information Gain metric \cite{davies2009evaluation} involves the computation
 The Beat Evaluation Toolbox (and therefore MIREX) uses a non-uniform histogram binning where the first, second and last bins are smaller than the rest of the bins while \mireval{} uses a standard uniformly-binned histogram.
 As a result, the Information Gain score reported by \mireval{} differs substantially from that reported by MIREX.
 
-\subsection{Voicing False Alarm Rate}
+\subsection{Segment Boundary Deviation}
+
+When computing the median of the absolute time differences for the boundary deviation metrics, there are often an even number of reference or estimated segment boundaries, resulting in an even number of differences to compute the median over.
+In this case, there is no ``middle'' element to choose as the median.
+\mireval{} follows the typical convention of computing the mean of the two middle elements in lieu of the median for even-length sequences, while MIREX chooses the larger of the two middle elements.
+This accounts for the discrepancy in the reference-to-estimated and estimated-to-reference boundary deviation metrics.
+
+\subsection{Interval Sampling for Structure Metrics}
+
+When computing the structure annotation metrics (pairwise precision, recall, and F-measure, Rand index, and normalized conditional entropy over- and under-segmentation scores), the reference and estimated labels must be sampled to a common timebase.
+In MIREX, a fixed sampling grid is used for the Rand index and pairwise classification metrics, but a different sampling rate is used for each, while a fixed number of samples is used for the conditional entropy scores.
+In \mireval{}, the same fixed sampling rate of 100 milliseconds is used for all structure annotation metrics, as specified in \cite{willis2013mirex}.
+
+Furthermore, the start and end time over which the intervals are sampled depends on both the reference and estimated intervals while \mireval{}, always samples with respect to the reference to ensure fair comparison across multiple estimates.
+This additionally requires that estimated intervals are adjusted to span the exact duration specified by the reference intervals.
+This is done by adding synthetic intervals when the estimated intervals do not span the reference intervals or otherwise trimming estimated intervals.
+These differences account for the average relative changes for the structure annotation metrics.
+
+\subsection{Segment Normalized Conditional Entropy Scores}
+
+When adding intervals to the estimated annotation as described above, \mireval{} ensures that the labels do not conflict with existing labels.
+This has the effect of changing the normalization constant in the normalized conditional entropy scores.
+Furthermore, when there's only one label, the normalized conditional entropy scores are not well defined.
+MIREX assigns a score of 1 in this case; in \mireval{} we assign a score of 0.
+This results in a larger average change for these two metrics.
+
+\subsection{Melody Voicing False Alarm Rate}
 
 When a reference melody annotation contains no unvoiced frames, the voicing false alarm rate is not well defined.
 MIREX assigns a score of 1 in this case, while \mireval{} assigns a score of 0 because, intuitively, no reference unvoiced frames could be estimated, so no false alarms should be reported.
