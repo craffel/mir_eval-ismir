@@ -144,7 +144,7 @@ The \textbf{F-measure} of the beat sequence, where an estimated beat is consider
 \textbf{continuity-based scores} which compute the proportion of the beat sequence which is continuously correct;
 and finally the \textbf{information gain} of the beat error histogram to a uniform distribution.
 
-\subsection{Chord Recognition}
+\subsection{Chord Estimation}
 
 % relevant papers
 % - pauwels & peeters
@@ -153,7 +153,7 @@ and finally the \textbf{information gain} of the beat error histogram to a unifo
 % - mirex 
 % - Utrecht agreement
 
-Despite being one of the oldest MIREX tasks, evaluation methodology and metrics for automatic chord recognition is an ongoing topic of discussion, due to issues with vocabularies, comparison semantics, and other lexicographical challenges unique to the task \cite{Peeters2013}.
+Despite being one of the oldest MIREX tasks, evaluation methodology and metrics for automatic chord estimation (ACE) is an ongoing topic of discussion, due to issues with vocabularies, comparison semantics, and other lexicographical challenges unique to the task \cite{Peeters2013}.
 %For example, ISMIR 2010 saw the fondly dubbed ``Utrecht Agreement on Chord Evaluation''\footnote{http://www.music-ir.org/mirex/wiki/The\_Utrecht\_Agreement\_on\_Chord\_Evaluation}, in which interested researchers met to discuss sane ways of quantifying the performance of automatic chord recognition systems.
 One source of difficulty stems from an inherent subjectivity in ``spelling'' a chord name and the level of detail a human observer can provide in a reference annotation \cite{McVicar}.
 As a result, a consensus has yet to be reached regarding the single best approach to comparing two sequences of chord labels, and instead are often compared over a set of rules, i.e Root, Major-Minor, and Sevenths, with or without inversions.
@@ -171,17 +171,17 @@ Based on this representation, we can symbolically define our interpretation of t
 Finally, \textbf{Sevenths-Inv} includes \textbf{Sevenths}, plus $\mathcal{B}_{est} == \mathcal{B}_{ref}$ subject to $\mathcal{B}_{ref} \in \mathcal{S}_{ref}$.
 Before proceeding, we draw attention to the set-inclusion conditions above, e.g. ``subject to...'', meaning that a comparison is \emph{ignored} during evaluation if the given criteria is not satisfied.
 
-Scores are computed by weighting each comparison by the duration of its interval, over all intervals; stated another way, this is the piecewise continuous-time integral of the equivalence of two chord sequences, $(\mathbf{C}_{ref}, \mathbf{C}_{est})$, expressed as follows:
+Track-wise scores, $S_n$, are computed by weighting each comparison by the duration of its interval, over all intervals in an audio file; stated another way, this is the piecewise continuous-time integral of the equivalence of two chord sequences, $(\mathbf{C}_{ref}, \mathbf{C}_{est})$, expressed as follows:
 
 \begin{equation}
-S(\mathbf{C}_{ref}, \mathbf{C}_{est}) = \frac{1}{T}\int_{t=0}^{T} \mathcal{C}_{ref}(t) == \mathcal{C}_{est}(t)
+S_n(\mathbf{C}_{ref}, \mathbf{C}_{est}) = \frac{1}{T}\int_{t=0}^{T} \mathcal{C}_{ref}(t) == \mathcal{C}_{est}(t)
 \end{equation}
 
 \noindent This is achieved by forming the union of the boundaries in each sequence, and summing the time intervals of the ``correct'' ranges. 
-In practice, a cumulative score, $S_{total}$, is tallied over a set of $N$ items, i.e. audio files, by discrete summation, where the importance of each score, $S_n$, is weighted by the duration, $T_n$, of each annotation:
+The cumulative score, referred to as \emph{weighted chord symbol recall} (WCSR), is tallied over a set of $N$ items, i.e. audio files, by discrete summation, where the importance of each score, $S_n$, is weighted by the duration, $T_n$, of each annotation:
 
 \begin{equation}
-S_{total} = \frac{\sum_{n=0}^{N} T_n*S_n}{\sum_{n=0}^{N} T_n}
+WCSR_{total} = \frac{\sum_{n=0}^{N} T_n*S_n}{\sum_{n=0}^{N} T_n}
 \end{equation}
  
 \subsection{Pattern Discovery}
@@ -502,8 +502,21 @@ It also uses one more bin than is specified by the user.
 \mireval{} uses a standard uniformly-binned histogram with as many bins as are specified by the user.
 As a result, the Information Gain score reported by \mireval{} differs substantially from that reported by MIREX.
 
+\subsection{Weighted Chord Symbol Recall}
+For reference, we compare our chord evaluation against the results provided from MIREX 2013.
+Though the \textbf{Root} comparison falls well within our accuracy tolerance, the other four comparison rules exhibit non-negligible discrepancies that warrant justification.
+Based on our current understanding, implementation differences are caused by two main sources of ambiguity.
+%Some interval mappings aren't well-defined.
+First, we find some chord labels in the MIREX reference annotations lack well-defined, i.e. singular, mappings into a comparison space. 
+One such example is $D:maj(*1)/\#1$.
+While the quality shorthand indicates ``major'', the asterisk implies the root is omitted and thus it is unclear whether $D:maj(*1)/\#1==D:maj1$.
+%Some chords get dropped in different scenarios, and we can't replicate the logic. 
+Second, and more importantly, such chords are likely ignored during evaluation, and we are unable to replicate the exact exclusion logic used by MIREX. 
+This has proven to be particularly difficult in the two inversion rules, and manifests in Table \ref{table:comparisons}. 
+For example, it seems as though $Bb:maj(9)/9$ was \emph{not} excluded from the MIREX evaluation, contradicting the description provided online.
+This chord alone causes an observable difference between the results of our implementation and previously reported results.
+
 % Beat: Compared against MIREX 2013
-% Chord: Compared against ??
 % Segmentation: Compared against ??
 % Melody: Compared against MIREX 2011, SG2 only
 % Pattern: Compared against development set, MATLAB code
@@ -521,13 +534,14 @@ As a result, the Information Gain score reported by \mireval{} differs substanti
 \begin{table*}[t]
   \centering
 \begin{tabular}{c c c c c c c c c c}
+
 \toprule
  \multicolumn{5}{ c }{Chord} & \multicolumn{5}{ c }{Melody}\\
   \cmidrule(lr){1-5}
 
   \cmidrule(lr){5-10}
  Root & M/m & M/m + Inv & 7ths & 7ths + Inv & Overall & Raw Pitch & Raw Chroma & Voicing R & Voicing F-A\\
-  0.007 & 0.1634 & 1.005 & 0.483 & 0.899 & 0.070\% &    0.087\% &    0.114\% &    0.000\% &   10.095\% \\
+  0.007\% & 0.1634\% & 1.005\% & 0.483\% & 0.899\% & 0.070\% &    0.087\% &    0.114\% &    0.000\% &   10.095\% \\
   \midrule
  \multicolumn{10}{ c }{Segmentation} \\
   \cmidrule(lr){1-10}
@@ -560,12 +574,16 @@ As a result, the Information Gain score reported by \mireval{} differs substanti
   \bottomrule
 
 \end{tabular}
+\label{table:comparisons}
 \end{table*}
 
 \section{Discussion}
 \label{sec:discussion}
 
 % Community development is crucial
+As seen in the case of evaluating chord estimation systems, it is our hope that an open-source, publicly refined implementation might help resolve independently performed evaluation in the future. 
+Furthermore, the difficulty faced in attempting to match the MIREX chord evaluation precisely clearly demonstrates the need for transparency and community involvement in comparative evaluation.
+%; and two, we are curious as to how reliability of independently reported results in the literature.
 
 \bibliography{mir_eval}
 
