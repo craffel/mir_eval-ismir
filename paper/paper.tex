@@ -209,30 +209,20 @@ S_{total} = \frac{\sum_{n=0}^{N} T_n*S_n}{\sum_{n=0}^{N} T_n}
  
 \subsection{Pattern Discovery}
 
-This task aims to evaluate algorithms that identify musical patterns (i.e. short fragments or melodic ideas that repeat at least twice) both from audio and symbolic representations.
-Given the novelty of this task \footnote{The first year to appear on MIREX was 2013.}, the evaluation metrics are likely to be modified in further editions.
-Nonetheless, Collins put together all the previously existent metrics and a few new ones for this task in its first appearance in MIREX\cite{Collins2013}, which resulted in 19 different scores, each one (except for the two that evaluate the algorithm execution time) implemented in MIR-eval and described below:
+Pattern discovery involves the identification of musical patterns (i.e. short fragments or melodic ideas that repeat at least twice) both from audio and symbolic representations.
+The metrics used to evaluation pattern discovery systems attempt to quantify the ability of the algorithm to not only determine the presents pattern in a piece, but also to find all of their occurrences.
+Given the novelty of this task (the first year it appeared in MIREX was 2013), the evaluation metrics are likely to be modified in further editions.
+Nonetheless, Collins compiled all previously existent metrics and proposed novel ones \cite{Collins2013}, which resulted in 19 different scores, each one implemented in \mireval{} and described below:
 
-\begin{itemize}
-    \item
-      \textbf{Standard F-measure, Precision, and Recall (F$_1$, P, R)}: This metric, composed of three scores, checks if the prototype patterns of the reference match possible key-transposed patterns in the prototype patterns of the estimations.
-      Since the sizes of these prototypes must be equal, this metric is quite restrictive and it tends to be 0 most of the time (see 2013 MIREX results).
-    \item
-      \textbf{Establishment F-measure, Precision, and Recall (F1$_{est}$, P$_{est}$, R$_{est}$)}: These scores evaluate the amount of patterns that were successfully identified by the estimated results, no matter how many occurrences they found.
-      In other words, this metric captures the ability of the algorithm to \textit{establish} that the estimated patterns are actually contained in the reference annotation.
-    \item 
-      \textbf{Occurrence F-measure, Precision, and Recall (F1$_{occ}$, P$_{occ}$, R$_{occ}$)}: Independently of how many patterns were correctly established, we may also want to know how well the algorithm finds all their respective occurrences throughout the piece.
+\begin{description}
+\item[Standard F-measure, Precision, and Recall:] An estimated pattern is considered correct only if it matches (up to translation) a reference prototype pattern.
+\item[Establishment F-measure, Precision, and Recall:] Computes the number of reference patterns that were successfully found, no matter how many occurrences were found.
+      In other words, these metrics capture the ability of the algorithm to \textit{establish} the patterns in a piece.
+\item[Occurrence F-measure, Precision, and Recall:] Measures whether an algorithm is able to retrieve all occurrences of a pattern.
       This metric aims to quantize this \textit{occurrence} retrieval quality of the algorithm.
-      This metric has a tolerance parameter $c$ to allow differences when evaluating the similarity between occurrences, and in MIREX they use $c=.75$ and $c=.5$.
-    \item
-      \textbf{Three-layer F-measure, Precision, and Recall (TLF$_1$, P$_3$, R$_3$)}: These scores can be seen as an improved version of the standard metrics.
-      They capture both the establishment of the patterns and the occurrence retrieval in a single set of scores, being more permissive than the standard evaluation.
-    \item
-      \textbf{First $N$ patterns metrics (FFTP$_{est}$, FFP)}: This includes the first $N$ patterns target proportion establishment recall, and the first $N$ patterns three-layer precision. 
-      By analyzing the first $N$ patterns only, we evaluate the ability of the algorithm of sorting the identified patterns based on their relevance. 
-      In MIREX, $N=5$.
-
-\end{itemize}
+\item[Three-layer F-measure, Precision, and Recall:] These metrics capture both the establishment of the patterns and the occurrence retrieval in a single set of scores.
+\item[First $N$ patterns metrics:] The target proportion establishment recall and three-layer precision analyzing the first $N$ patterns only, which measures the ability of the algorithm to sort the identified patterns based on their relevance. 
+\end{description}
 
 \subsection{Structural Segmentation}
 
