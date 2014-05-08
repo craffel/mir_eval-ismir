@@ -145,7 +145,7 @@ Many metrics additionally compare the beat sequences at different metric levels 
 \mireval{} includes the following metrics for beat tracking, which are defined in detail in \cite{davies2009evaluation}:
 The \textbf{F-measure} of the beat sequence, where an estimated beat is considered correct if it is sufficiently close to a reference beat;
 \textbf{Cemgil's score}, which computes the sum of Gaussian errors for each beat;
-\textbf{Goto's score}, a binary score which is 1 when some specific heuristic criteria are met;
+\textbf{Goto's score}, a binary score which is 1 when at least 25\% of the estimated beat sequence closely matches the reference beat sequence;
 \textbf{McKinney's P-score}, which computes the cross-correlation of the estimated and reference beat sequences represented as impulse trains;
 \textbf{continuity-based scores} which compute the proportion of the beat sequence which is continuously correct;
 and finally the \textbf{information gain} of the beat error histogram to a uniform distribution.
