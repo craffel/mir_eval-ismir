@@ -145,7 +145,7 @@ The \textbf{F-measure} of the beat sequence, where an estimated beat is consider
 \textbf{continuity-based scores} which compute the proportion of the beat sequence which is continuously correct;
 and finally the \textbf{information gain} of the beat error histogram to a uniform distribution.
 
-\subsection{Chord Recognition}
+\subsection{Chord Estimation}
 
 % relevant papers
 % - pauwels & peeters
@@ -154,57 +154,35 @@ and finally the \textbf{information gain} of the beat error histogram to a unifo
 % - mirex 
 % - Utrecht agreement
 
-Despite being one of the oldest MIREX tasks, evaluation methodology and metrics for automatic chord recognition is an ongoing topic of discussion.
+Despite being one of the oldest MIREX tasks, evaluation methodology and metrics for automatic chord estimation (ACE) is an ongoing topic of discussion, due to issues with vocabularies, comparison semantics, and other lexicographical challenges unique to the task \cite{Peeters2013}.
 %For example, ISMIR 2010 saw the fondly dubbed ``Utrecht Agreement on Chord Evaluation''\footnote{http://www.music-ir.org/mirex/wiki/The\_Utrecht\_Agreement\_on\_Chord\_Evaluation}, in which interested researchers met to discuss sane ways of quantifying the performance of automatic chord recognition systems.
-Several recent articles address issues and concerns with vocabularies, comparison semantics, and other lexicographical challenges unique to chord recognition \cite{}.
-Ultimately, the source of this difficulty stems from the inherent subjectivity in ``spelling'' a chord name and the level of detail a human observer can provide in a reference annotation \cite{McVicar}.
-As a result, a consensus has yet to be reached regarding the single best approach to comparing two sequences of chord labels, and instead are often compared over a set of rules, e.g Major-Minor, Sevenths, with or without inversions, and so on.
+One source of difficulty stems from an inherent subjectivity in ``spelling'' a chord name and the level of detail a human observer can provide in a reference annotation \cite{McVicar}.
+As a result, a consensus has yet to be reached regarding the single best approach to comparing two sequences of chord labels, and instead are often compared over a set of rules, i.e Root, Major-Minor, and Sevenths, with or without inversions.
 
-Thanks to the previous efforts of Harte \cite{}, text representations of chord labels adhere to a standardized format, consisting of a root, quality, extensions, and a bass note; of these, only the root is strictly required.
-However, in order to efficiently compare chords in a variety of different ways, it is helpful to first translate a given chord label $\mathcal{C}$ into a numerical representation, shown in Figure \ref{}.
-In this example, a $G:7(9)/5$ is mapped to split into 4 pieces of information: one, the root is mapped to an absolute pitch class $\mathcal{R}$, in $[0, 11]$, where $C\to0$, $C\sharp/D\flat\to1$, etc; two, the quality is mapped to a root-invariant 12-dimensional bit vector $\mathcal{Q}$ by setting the scale degrees of the quality; three, any extensions are applied (via addition or omission) to the quality bit vector as scale degrees in a single octave, resulting in pitch vector $\mathcal{P}$; and four, the bass interval (5) is translated to the relative scale degree in semitones $\mathcal{B}$.
-Note that the add-9 is rolled into a single octave as an add-2.
-This is a matter of convenience as extended chords (9's, 11's or 13's) are traditionally resolved to a single-octave equivalent, but the bit-vector representation could be easily expanded to represent such information.
+To efficiently compare chords, we first translate a given chord label $\mathcal{C}$ into a numerical representation, based on the syntax of \cite{Harte2010}.
+For example, $G:maj(6)/5$ is mapped to three pieces of information: one, the root (``G'') is mapped to an absolute pitch class $\mathcal{R}$, in $[0, 11]$, where $C\to0$, $C\sharp/D\flat\to1$, etc; two, the quality shorthand (``maj'') and scale degrees (``6'') are mapped to a root-invariant bit vector $\mathcal{S}$ of active semitones; and three, the bass interval (``5'') is translated to the relative scale degree in semitones $\mathcal{B}$.
+%Traditionally, extended chords (9's, 11's or 13's) are not considered in evaluation and instead resolved to the tetrad contained therein, e.g. $C:9 \to C:7$, etc. 
+%This semitone bit-vector representation can, however, be easily expanded to represent such information in the future.
 
-Having gone through this bit of effort, it is now straightforward to compare chords along the five rules used in MIREX 2013:
-\begin{enumerate}
-\item Root:
-	\begin{enumerate}
-	\item $\mathcal{R}_{est} == \mathcal{R}_{ref}$
-	\item $\forall \mathcal{Q}_{ref}$
-	\end{enumerate}
-\item Major-Minor: Rule 1.a, plus
-	\begin{enumerate}
-	\item $\mathcal{Q}_{est} == \mathcal{Q}_{ref}$
-	\item $\mathcal{Q}_{ref} \in \{Maj, min\}$ 
-	\end{enumerate}
-\item Major-Minor w/Inversions: Rule 2, plus
-	\begin{enumerate}
-	\item $\mathcal{B}_{ref} \in \mathcal{Q}_{ref}$
-	\end{enumerate}
-\item Sevenths: Rule 1.1, plus
-	\begin{enumerate}
-	\item $\mathcal{Q}_{est} == \mathcal{Q}_{ref} $
-	\item $ \mathcal{Q}_{ref} \in \{Maj, min, Maj7, min7, 7\}$ 
-	\end{enumerate}
-\item Sevenths w/Inversions: Rule 4, plus
-	\begin{enumerate}
-	\item $\mathcal{B}_{ref} \in \mathcal{Q}_{ref}$ 
-	\end{enumerate}
-\end{enumerate}
+Based on this representation, we can symbolically define our interpretation of the five rules used in MIREX 2013\footnote{http://www.music-ir.org/mirex/wiki/2013:Audio\_Chord\_Estimation} to compare an estimated chord $\mathcal{C}_{est}$ with a reference $\mathcal{C}_{ref}$.
+\textbf{Root} is given by $\mathcal{R}_{est} == \mathcal{R}_{ref}$, for all chords.
+\textbf{Major-Minor} includes \textbf{Root}, plus $\mathcal{S}_{est} == \mathcal{S}_{ref}$ subject to $\mathcal{S}_{ref} \in \{Maj, min\}$.
+\textbf{Major-Minor-Inv} includes \textbf{Major-minor}, plus $\mathcal{B}_{est} == \mathcal{B}_{ref}$ subject to $\mathcal{B}_{ref} \in \mathcal{S}_{ref}$.
+\textbf{Sevenths} follows \textbf{Major-minor}, but is instead subject to $\mathcal{S}_{ref} \in \{Maj, min, Maj7, min7, 7, minmaj7\}$.
+Finally, \textbf{Sevenths-Inv} includes \textbf{Sevenths}, plus $\mathcal{B}_{est} == \mathcal{B}_{ref}$ subject to $\mathcal{B}_{ref} \in \mathcal{S}_{ref}$.
+Before proceeding, we draw attention to the set-inclusion conditions above, e.g. ``subject to...'', meaning that a comparison is \emph{ignored} during evaluation if the given criteria is not satisfied.
 
-Following recent trends in MIREX, an overall score is computed by weighting each comparison by the duration of its interval, over all intervals; stated another way, this is the piecewise continuous-time integral of the intersection of two chord sequences, $(\mathbf{C}_{ref}, \mathbf{C}_{est})$, expressed as follows:
+Track-wise scores, $S_n$, are computed by weighting each comparison by the duration of its interval, over all intervals in an audio file; stated another way, this is the piecewise continuous-time integral of the equivalence of two chord sequences, $(\mathbf{C}_{ref}, \mathbf{C}_{est})$, expressed as follows:
 
 \begin{equation}
-S(\mathbf{C}_{ref}, \mathbf{C}_{est}) = \frac{1}{T}\int_{t=0}^{T} \mathcal{C}_{ref}(t) == \mathcal{C}_{est}(t)
+S_n(\mathbf{C}_{ref}, \mathbf{C}_{est}) = \frac{1}{T}\int_{t=0}^{T} \mathcal{C}_{ref}(t) == \mathcal{C}_{est}(t)
 \end{equation}
 
-\noindent Here, this is achieved here by forming the union of the boundaries in each sequence, and summing the time intervals of the correct ranges. Note that equivalence is subject to one of the rules defined previously. 
-
-Finally, the total score over a set of $N$ items is given by a discrete summation, where the importance of each score, $S_n$, is weighted by the duration, $T_n$, of each annotation:
+\noindent This is achieved by forming the union of the boundaries in each sequence, and summing the time intervals of the ``correct'' ranges. 
+The cumulative score, referred to as \emph{weighted chord symbol recall} (WCSR), is tallied over a set of $N$ items, i.e. audio files, by discrete summation, where the importance of each score, $S_n$, is weighted by the duration, $T_n$, of each annotation:
 
 \begin{equation}
-S_{total} = \frac{\sum_{n=0}^{N} T_n*S_n}{\sum_{n=0}^{N} T_n}
+WCSR_{total} = \frac{\sum_{n=0}^{N} T_n*S_n}{\sum_{n=0}^{N} T_n}
 \end{equation}
  
 \subsection{Pattern Discovery}
@@ -327,7 +305,7 @@ F-Measure  & Cemgil     & Goto       &  P-score   & CMLc       & CMLt       & AM
   \cmidrule(lr){1-5}
   \cmidrule(lr){6-10}
   Root       & Maj/min       & Maj/min + Inv & 7ths & 7ths + Inv & Overall & Raw Pitch & Chroma & Voicing R & Voicing FA \\
-  ??? & ??? & ??? & ??? & ??? & 0.070\% &    0.087\% &    0.114\% &    0.000\% &   10.095\% \\
+ 0.007\% & 0.1634\% & 1.005\% & 0.483\% & 0.899\% & 0.070\% &    0.087\% &    0.114\% &    0.000\% &   10.095\% \\
   \bottomrule
 \end{tabularx}
 \end{table*}
@@ -372,10 +350,89 @@ MIREX assigns a score of 1 in this case, while \mireval{} assigns a score of 0.
 In the data set over which the average relative change for the melody metrics was computed, one reference annotation contained no unvoiced frames.
 This discrepancy caused a large inflation of the average relative change reported for the voicing false alarm rate.
 
+\subsection{Weighted Chord Symbol Recall}
+For reference, we compare our chord evaluation against the results provided from MIREX 2013.
+Though the \textbf{Root} comparison falls well within our accuracy tolerance, the other four comparison rules exhibit non-negligible discrepancies that warrant justification.
+Based on our current understanding, implementation differences are caused by two main sources of ambiguity.
+%Some interval mappings aren't well-defined.
+First, we find some chord labels in the MIREX reference annotations lack well-defined, i.e. singular, mappings into a comparison space. 
+One such example is $D:maj(*1)/\#1$.
+While the quality shorthand indicates ``major'', the asterisk implies the root is omitted and thus it is unclear whether $D:maj(*1)/\#1==D:maj1$.
+%Some chords get dropped in different scenarios, and we can't replicate the logic. 
+Second, and more importantly, such chords are likely ignored during evaluation, and we are unable to replicate the exact exclusion logic used by MIREX. 
+This has proven to be particularly difficult in the two inversion rules, and manifests in Table \ref{table:comparisons}. 
+For example, it seems as though $Bb:maj(9)/9$ was \emph{not} excluded from the MIREX evaluation, contradicting the description provided online.
+This chord alone causes an observable difference between the results of our implementation and previously reported results.
+
+% Beat: Compared against MIREX 2013
+% Segmentation: Compared against ??
+% Melody: Compared against MIREX 2011, SG2 only
+% Pattern: Compared against development set, MATLAB code
+% Source Separation: Compared against SiSEC dev sets
+% Onset: Compared against MIREX 2013
+
+% Beat - 9 metrics
+% Chord - 5 metrics
+% Segmentation - 14 metrics
+% Melody - 5 metrics
+% Pattern - 21 metrics
+% Onset - 3 metrics
+% Source Separation - 3 metrics
+
+\begin{table*}[t]
+  \centering
+\begin{tabular}{c c c c c c c c c c}
+
+\toprule
+ \multicolumn{5}{ c }{Chord} & \multicolumn{5}{ c }{Melody}\\
+  \cmidrule(lr){1-5}
+
+  \cmidrule(lr){5-10}
+ Root & M/m & M/m + Inv & 7ths & 7ths + Inv & Overall & Raw Pitch & Raw Chroma & Voicing R & Voicing F-A\\
+  0.007\% & 0.1634\% & 1.005\% & 0.483\% & 0.899\% & 0.070\% &    0.087\% &    0.114\% &    0.000\% &   10.095\% \\
+  \midrule
+ \multicolumn{10}{ c }{Segmentation} \\
+  \cmidrule(lr){1-10}
+  NCE-Over   & NCE-under  & Pairwise F & Pairwise P & Pairwise R & Rand       & F@.5       & P@.5       & R@.5       & F@3 \\
+3.182\% &   11.082\% &    0.937\% &    0.942\% &    0.785\% &    0.291\% &    0.429\% &    0.088\% &    1.021\% &    0.393\% \\
+  \midrule
+ \multicolumn{4}{ c }{Segmentation} & \multicolumn{6}{ c }{Beat}\\
+  \cmidrule(lr){1-4}
+  \cmidrule(lr){5-10}
+  P@3        & R@3 & Ref-est dev. & Est-ref dev. & F-Measure  & Cemgil     & Goto       &  P-score   & CMLc       & CMLt \\
+  0.094\% &    0.954\% & 0.935\% &    0.000\% &  0.703\% &    0.035\% &    0.054\% &    0.877\% &    0.161\% &    0.143\% \\
+  \midrule
+ \multicolumn{3}{ c }{Beat} & \multicolumn{7}{ c }{Pattern}\\
+  \cmidrule(lr){1-3}
+  \cmidrule(lr){4-10}
+  AMLc       & AMLt       & In. Gain & Pat & Pat & Pat & Pat & Pat & Pat & Pat \\
+  0.137\% &    0.139\% &   9.174\% &  ??? & ??? & ??? & ??? & ??? & ??? & ???\\
+  \midrule
+ \multicolumn{10}{ c }{Pattern}\\
+  \cmidrule(lr){1-10}
+  Pat & Pat & Pat & Pat & Pat & Pat & Pat & Pat & Pat & Pat\\
+  ??? & ??? & ??? & ??? & ??? & ??? & ??? & ??? & ??? & ???\\
+  \midrule
+ \multicolumn{4}{ c }{Pattern}  & \multicolumn{3}{ c }{Onset}  & \multicolumn{3}{ c }{Source Separation}\\
+  \cmidrule(lr){1-4}
+  \cmidrule(lr){5-7}
+  \cmidrule(lr){8-10}
+ Pat & Pat & Pat & Pat & F-measure  & Precision  & Recall & SDR & SIR & SAR \\
+ ??? & ??? & ??? & ??? &    0.165\% &    0.165\% &    0.165\% & ??? & ??? & ??? \\
+  \bottomrule
+
+\end{tabular}
+\label{table:comparisons}
+\end{table*}
+>>>>>>> 63bc147b652a8ff4fcd68d1cd3b1f2b0889cb07b
+
 \section{Discussion}
 \label{sec:discussion}
 
 % Community development is crucial
+As seen in the case of evaluating chord estimation systems, it is our hope that an open-source, publicly refined implementation might help resolve independently performed evaluation in the future. 
+Furthermore, the difficulty faced in attempting to match the MIREX chord evaluation precisely clearly demonstrates the need for transparency and community involvement in comparative evaluation.
+%; and two, we are curious as to how reliability of independently reported results in the literature.
 
 \bibliography{mir_eval}
 
