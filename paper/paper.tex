@@ -114,7 +114,7 @@ Finally, we discuss and summarize our contributions in Section \ref{sec:discussi
 \section{\mireval{}'s architecture}
 \label{sec:architecture}
 
-\mireval{} is a Python library which includes metrics for the following tasks: Beat detection, chord recognition, pattern discovery, structural segmentation, melody extraction, onset detection, and source separation.
+\mireval{} is a Python library which includes metrics for the following tasks: Beat detection, chord recognition, pattern discovery, structural segmentation, melody extraction, and onset detection.
 Each task is given its own submodule (e.g. \mireval{}\texttt{.beat}), and each metric is defined as a separate function in each submodule (e.g. \mireval{}\texttt{.beat.f\char`_measure}).
 Each task submodule also includes common data pre-processing steps for the task.
 Every metric function includes detailed documentation, example usage, input validation, and references to the original paper which defined the metric.
@@ -470,9 +470,6 @@ The goal of an onset detection algorithm is to automatically determine when note
 As is also done in beat tracking and segment boundary detection, the primary method used to evaluate onset detectors is to first determine which estimated onsets are ``correct'', where correctness is defined as being within a small window of a reference onset \cite{bock2012evaluating}.
 From this, \textbf{precision}, \textbf{recall}, and \textbf{F-measure} scores are computed.
 
-\subsection{Source Separation}
-
-
 \section{Comparison to Existing Implementations}
 \label{sec:comparison}
 
@@ -529,57 +526,46 @@ As a result, the Information Gain score reported by \mireval{} differs substanti
 % Segmentation: Compared against ??
 % Melody: Compared against MIREX 2011, SG2 only
 % Pattern: Compared against development set, MATLAB code
-% Source Separation: Compared against SiSEC dev sets
 % Onset: Compared against MIREX 2013
 
 % Beat - 9 metrics
 % Chord - 5 metrics
 % Segmentation - 14 metrics
 % Melody - 5 metrics
-% Pattern - 21 metrics
 % Onset - 3 metrics
-% Source Separation - 3 metrics
 
 \begin{table*}[t]
   \centering
-\begin{tabular}{c c c c c c c c c c}
+\begin{tabular}{c c c c c c c c c}
 \toprule
- \multicolumn{5}{ c }{Chord} & \multicolumn{5}{ c }{Melody}\\
+ \multicolumn{9}{ c }{Beat Detection} \\
+  \cmidrule(lr){1-9}
+F-Measure  & Cemgil     & Goto       &  P-score   & CMLc       & CMLt       & AMLc       & AMLt       & In. Gain   \\
+   0.703\% &    0.035\% &    0.054\% &    0.877\% &    0.161\% &    0.143\% &    0.137\% &    0.139\% &    9.174\% \\
+  \midrule
+\end{tabular}
+\begin{tabular}{c c c c c c c c c}
+ \multicolumn{9}{ c }{Structural Segmentation} \\
+  \cmidrule(lr){1-9}
+  NCE-Over   & NCE-under  & Pairwise F & Pairwise P & Pairwise R & Rand       & F@.5       & P@.5       & R@.5  \\
+3.182\% &   11.082\% &    0.937\% &    0.942\% &    0.785\% &    0.291\% &    0.429\% &    0.088\% &    1.021\%  \\
+  \midrule
+\end{tabular}
+\begin{tabular}{c c c c c c c c}
+ \multicolumn{5}{ c }{Structural Segmentation (continued)} & \multicolumn{3}{ c }{Onset Detection}\\
   \cmidrule(lr){1-5}
-  \cmidrule(lr){5-10}
- Root & M/m & M/m + Inv & 7ths & 7ths + Inv & Overall & Raw Pitch & Raw Chroma & Voicing R & Voicing F-A\\
- ??? & ??? & ??? & ??? & ??? & 0.070\% &    0.087\% &    0.114\% &    0.000\% &   10.095\% \\
+  \cmidrule(lr){6-8}
+  F@3 &   P@3        & R@3 & Ref-est dev. & Est-ref dev. & F-measure  & Precision  & Recall     \\
+ 0.393\%  & 0.094\% &    0.954\% & 0.935\% &    0.000\% &  0.165\% &    0.165\% &    0.165\% \\
   \midrule
- \multicolumn{10}{ c }{Segmentation} \\
-  \cmidrule(lr){1-10}
-  NCE-Over   & NCE-under  & Pairwise F & Pairwise P & Pairwise R & Rand       & F@.5       & P@.5       & R@.5       & F@3 \\
-3.182\% &   11.082\% &    0.937\% &    0.942\% &    0.785\% &    0.291\% &    0.429\% &    0.088\% &    1.021\% &    0.393\% \\
-  \midrule
- \multicolumn{4}{ c }{Segmentation} & \multicolumn{6}{ c }{Beat}\\
-  \cmidrule(lr){1-4}
-  \cmidrule(lr){5-10}
-  P@3        & R@3 & Ref-est dev. & Est-ref dev. & F-Measure  & Cemgil     & Goto       &  P-score   & CMLc       & CMLt \\
-  0.094\% &    0.954\% & 0.935\% &    0.000\% &  0.703\% &    0.035\% &    0.054\% &    0.877\% &    0.161\% &    0.143\% \\
-  \midrule
- \multicolumn{3}{ c }{Beat} & \multicolumn{7}{ c }{Pattern}\\
-  \cmidrule(lr){1-3}
-  \cmidrule(lr){4-10}
-  AMLc       & AMLt       & In. Gain & Pat & Pat & Pat & Pat & Pat & Pat & Pat \\
-  0.137\% &    0.139\% &   9.174\% &  ??? & ??? & ??? & ??? & ??? & ??? & ???\\
-  \midrule
- \multicolumn{10}{ c }{Pattern}\\
-  \cmidrule(lr){1-10}
-  Pat & Pat & Pat & Pat & Pat & Pat & Pat & Pat & Pat & Pat\\
-  ??? & ??? & ??? & ??? & ??? & ??? & ??? & ??? & ??? & ???\\
-  \midrule
- \multicolumn{4}{ c }{Pattern}  & \multicolumn{3}{ c }{Onset}  & \multicolumn{3}{ c }{Source Separation}\\
-  \cmidrule(lr){1-4}
-  \cmidrule(lr){5-7}
-  \cmidrule(lr){8-10}
- Pat & Pat & Pat & Pat & F-measure  & Precision  & Recall & SDR & SIR & SAR \\
- ??? & ??? & ??? & ??? &    0.165\% &    0.165\% &    0.165\% & ??? & ??? & ??? \\
+\end{tabular}
+\begin{tabular}{c c c c c c c c c c}
+ \multicolumn{5}{ c }{Chord Recognition} & \multicolumn{5}{ c }{Melody Extraction}\\
+  \cmidrule(lr){1-5}
+  \cmidrule(lr){6-10}
+  Root       & Maj/min       & Maj/min + Inv & 7ths & 7ths + Inv & Overall & Raw Pitch & Chroma & Voicing R & Voicing FA \\
+  ??? & ??? & ??? & ??? & ??? & 0.070\% &    0.087\% &    0.114\% &    0.000\% &   10.095\% \\
   \bottomrule
-
 \end{tabular}
 \end{table*}
 
