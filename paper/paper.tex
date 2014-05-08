@@ -312,7 +312,40 @@ F-Measure  & Cemgil     & Goto       &  P-score   & CMLc       & CMLt       & AM
 
 \subsection{Non-greedy matching of events}
 
-Brian writes this section, which covers the differences in beat.f\_measure, boundary.detection, and onset.f\_measure
+In the computation of the F-measure, precision and recall metrics for the beat tracking, boundary detection, and onset detection tasks, an estimated event is considered correct (a ``hit'') if it falls within a small window of a reference event.
+No estimated boundary is counted as a hit for more than one reference boundary, and vice versa.
+In MIREX, this assignment is done in a greedy fashion, however in \mireval{} we use an optimal matching strategy.
+This is accomplished by computing a maximum bipartite matching between the estimated events and the reference events (subject to the window constraint) using the Hopcroft-Karp algorithm~\cite{hopcroft1973n}.
+This explains the observed discrepancy between \mireval{} and MIREX for each of these metrics.
+In all cases where the metric differs, \mireval{} reports a higher score, indicating that the greedy matching strategy was suboptimal.
+
+\subsection{Segment Boundary Deviation}
+
+% Because when numpy computes the median of an even number of numbers, it computes the mean of the two middle values.
+
+\subsection{Segment Frame Clustering}
+
+% Frame sampling - MIREX does two different things, we do one thing consistently
+% For Rand index and pairwise classification, MIREX uses a fixed sampling but at different rates.
+% In the conditional entropy scores, it uses a fixed number of samples.
+% In \mireval{}, we use the same fixed sampling rate for all metrics.
+
+% In MIREX, the range over which frames are sampled depends on both the reference and the estimate intervals.
+% In \mireval{}, the sampling is always done with respect to the reference to ensure fair comparison across multiple estimates for the same reference.
+
+% This additionally requires that estimated intervals are adjusted to span the exact duration specified by the reference intervals.
+% In \mireval{}, this is done by adding synthetic intervals when the estimated intervals do not span the reference intervals or otherwise trimming estimated intervals.
+
+%this affects___
+
+
+\subsection{Segment Normalized Conditional Entropy Scores}
+
+% When adding intervals, we ensure that the labels do not conflict with existing labels in the estimated annotation.
+% This has the effect of changing the normalization constant in the normalized conditional entropy scores.
+
+% When there's only one label, the normalized conditional entropy scores are not well defined.
+% In MIREX, they are assigned a score of 1 in this case; in \mireval{} we assign a score of 0.
 
 \subsection{McKinney's P-score}
 
@@ -328,14 +361,6 @@ The Information Gain metric \cite{davies2009evaluation} involves the computation
 The Beat Evaluation Toolbox uses a non-uniform histogram binning where the first, second and last bins are smaller than the rest of the bins while \mireval{} uses a standard uniformly-binned histogram.
 As a result, the Information Gain score reported by \mireval{} differs substantially from that reported by MIREX.
 
-\subsection{Other segmentation differences}
-
-Brian renames this section and writes it/splits it into different sections.
-
-\subsection{Chord stuff}
-
-Eric renames this section and writes it/splits it into different sections
-
 \subsection{Voicing False Alarm Rate}
 
 When a reference melody annotation contains no unvoiced frames, the voicing false alarm rate is not well defined.
@@ -348,7 +373,7 @@ MIREX assigns a score of 1 in this case, while \mireval{} assigns a score of 0.
 %%%
 %%%
 In the data set over which the average relative change for the melody metrics was computed, one reference annotation contained no unvoiced frames.
-This discrepancy caused a large inflation of the average relative change reported for the voicing false alarm rate.
+This discrepancy caused a large inflation of the average relative change reported for the voicing false alarm rate due to the small number of examples in our dataset.
 
 \subsection{Weighted Chord Symbol Recall}
 For reference, we compare our chord evaluation against the results provided from MIREX 2013.
@@ -363,67 +388,6 @@ Second, and more importantly, such chords are likely ignored during evaluation, 
 This has proven to be particularly difficult in the two inversion rules, and manifests in Table \ref{table:comparisons}. 
 For example, it seems as though $Bb:maj(9)/9$ was \emph{not} excluded from the MIREX evaluation, contradicting the description provided online.
 This chord alone causes an observable difference between the results of our implementation and previously reported results.
-
-% Beat: Compared against MIREX 2013
-% Segmentation: Compared against ??
-% Melody: Compared against MIREX 2011, SG2 only
-% Pattern: Compared against development set, MATLAB code
-% Source Separation: Compared against SiSEC dev sets
-% Onset: Compared against MIREX 2013
-
-% Beat - 9 metrics
-% Chord - 5 metrics
-% Segmentation - 14 metrics
-% Melody - 5 metrics
-% Pattern - 21 metrics
-% Onset - 3 metrics
-% Source Separation - 3 metrics
-
-\begin{table*}[t]
-  \centering
-\begin{tabular}{c c c c c c c c c c}
-
-\toprule
- \multicolumn{5}{ c }{Chord} & \multicolumn{5}{ c }{Melody}\\
-  \cmidrule(lr){1-5}
-
-  \cmidrule(lr){5-10}
- Root & M/m & M/m + Inv & 7ths & 7ths + Inv & Overall & Raw Pitch & Raw Chroma & Voicing R & Voicing F-A\\
-  0.007\% & 0.1634\% & 1.005\% & 0.483\% & 0.899\% & 0.070\% &    0.087\% &    0.114\% &    0.000\% &   10.095\% \\
-  \midrule
- \multicolumn{10}{ c }{Segmentation} \\
-  \cmidrule(lr){1-10}
-  NCE-Over   & NCE-under  & Pairwise F & Pairwise P & Pairwise R & Rand       & F@.5       & P@.5       & R@.5       & F@3 \\
-3.182\% &   11.082\% &    0.937\% &    0.942\% &    0.785\% &    0.291\% &    0.429\% &    0.088\% &    1.021\% &    0.393\% \\
-  \midrule
- \multicolumn{4}{ c }{Segmentation} & \multicolumn{6}{ c }{Beat}\\
-  \cmidrule(lr){1-4}
-  \cmidrule(lr){5-10}
-  P@3        & R@3 & Ref-est dev. & Est-ref dev. & F-Measure  & Cemgil     & Goto       &  P-score   & CMLc       & CMLt \\
-  0.094\% &    0.954\% & 0.935\% &    0.000\% &  0.703\% &    0.035\% &    0.054\% &    0.877\% &    0.161\% &    0.143\% \\
-  \midrule
- \multicolumn{3}{ c }{Beat} & \multicolumn{7}{ c }{Pattern}\\
-  \cmidrule(lr){1-3}
-  \cmidrule(lr){4-10}
-  AMLc       & AMLt       & In. Gain & Pat & Pat & Pat & Pat & Pat & Pat & Pat \\
-  0.137\% &    0.139\% &   9.174\% &  ??? & ??? & ??? & ??? & ??? & ??? & ???\\
-  \midrule
- \multicolumn{10}{ c }{Pattern}\\
-  \cmidrule(lr){1-10}
-  Pat & Pat & Pat & Pat & Pat & Pat & Pat & Pat & Pat & Pat\\
-  ??? & ??? & ??? & ??? & ??? & ??? & ??? & ??? & ??? & ???\\
-  \midrule
- \multicolumn{4}{ c }{Pattern}  & \multicolumn{3}{ c }{Onset}  & \multicolumn{3}{ c }{Source Separation}\\
-  \cmidrule(lr){1-4}
-  \cmidrule(lr){5-7}
-  \cmidrule(lr){8-10}
- Pat & Pat & Pat & Pat & F-measure  & Precision  & Recall & SDR & SIR & SAR \\
- ??? & ??? & ??? & ??? &    0.165\% &    0.165\% &    0.165\% & ??? & ??? & ??? \\
-  \bottomrule
-
-\end{tabular}
-\label{table:comparisons}
-\end{table*}
 
 \section{Discussion}
 \label{sec:discussion}
