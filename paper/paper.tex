@@ -14,6 +14,7 @@
 
 \usepackage{url}
 \usepackage{microtype}
+\usepackage{tabularx}
 
 \def\eg{\emph{e.g.}}
 \def\ie{\emph{i.e.}}
@@ -348,37 +349,37 @@ This discrepancy caused a large inflation of the average relative change reporte
 \begin{table*}[t]
 \label{tab:comparison}
   \centering
-\begin{tabular}{c c c c c c c c c}
+\begin{tabularx}{\linewidth}{c *{8}{>{\centering\arraybackslash}X}}
 \toprule
  \multicolumn{9}{ c }{Beat Detection} \\
   \cmidrule(lr){1-9}
 F-Measure  & Cemgil     & Goto       &  P-score   & CMLc       & CMLt       & AMLc       & AMLt       & In. Gain   \\
    0.703\% &    0.035\% &    0.054\% &    0.877\% &    0.161\% &    0.143\% &    0.137\% &    0.139\% &    9.174\% \\
   \midrule
-\end{tabular}
-\begin{tabular}{c c c c c c c c c}
+\end{tabularx}
+\begin{tabularx}{\linewidth}{c c c c c *{4}{>{\centering\arraybackslash}X}}
  \multicolumn{9}{ c }{Structural Segmentation} \\
   \cmidrule(lr){1-9}
   NCE-Over   & NCE-under  & Pairwise F & Pairwise P & Pairwise R & Rand       & F@.5       & P@.5       & R@.5  \\
 3.182\% &   11.082\% &    0.937\% &    0.942\% &    0.785\% &    0.291\% &    0.429\% &    0.088\% &    1.021\%  \\
   \midrule
-\end{tabular}
-\begin{tabular}{c c c c c c c c}
+\end{tabularx}
+\begin{tabularx}{\linewidth}{*{8}{>{\centering\arraybackslash}X}}
  \multicolumn{5}{ c }{Structural Segmentation (continued)} & \multicolumn{3}{ c }{Onset Detection}\\
   \cmidrule(lr){1-5}
   \cmidrule(lr){6-8}
   F@3 &   P@3        & R@3 & Ref-est dev. & Est-ref dev. & F-measure  & Precision  & Recall     \\
  0.393\%  & 0.094\% &    0.954\% & 0.935\% &    0.000\% &  0.165\% &    0.165\% &    0.165\% \\
   \midrule
-\end{tabular}
-\begin{tabular}{c c c c c c c c c c}
+\end{tabularx}
+\begin{tabularx}{\linewidth}{*{2}{>{\centering\arraybackslash}X} c c c c c c c c}
  \multicolumn{5}{ c }{Chord Recognition} & \multicolumn{5}{ c }{Melody Extraction}\\
   \cmidrule(lr){1-5}
   \cmidrule(lr){6-10}
   Root       & Maj/min       & Maj/min + Inv & 7ths & 7ths + Inv & Overall & Raw Pitch & Chroma & Voicing R & Voicing FA \\
   ??? & ??? & ??? & ??? & ??? & 0.070\% &    0.087\% &    0.114\% &    0.000\% &   10.095\% \\
   \bottomrule
-\end{tabular}
+\end{tabularx}
 \end{table*}
 
 \section{Discussion}
