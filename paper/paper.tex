@@ -381,14 +381,7 @@ As a result, the Information Gain score reported by \mireval{} differs substanti
 \subsection{Voicing False Alarm Rate}
 
 When a reference melody annotation contains no unvoiced frames, the voicing false alarm rate is not well defined.
-MIREX assigns a score of 1 in this case, while \mireval{} assigns a score of 0.
-%%%
-%%%
-%%%
-% WHY?
-%%%
-%%%
-%%%
+MIREX assigns a score of 1 in this case, while \mireval{} assigns a score of 0 because, intuitively, no reference unvoiced frames could be estimated, so no false alarms should be reported.
 In the data set over which the average relative change for the melody metrics was computed, one reference annotation contained no unvoiced frames.
 This discrepancy caused a large inflation of the average relative change reported for the voicing false alarm rate due to the small number of examples in our dataset.
 
