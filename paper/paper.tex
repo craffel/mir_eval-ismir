@@ -115,7 +115,7 @@ Finally, we discuss and summarize our contributions in Section \ref{sec:discussi
 \section{\mireval{}'s architecture}
 \label{sec:architecture}
 
-\mireval{} is a Python library which includes metrics for the following tasks: Beat detection, chord recognition, pattern discovery, structural segmentation, melody extraction, and onset detection.
+\mireval{} is a Python library which includes metrics for the following tasks: Beat detection, chord estimation, pattern discovery, structural segmentation, melody extraction, and onset detection.
 Each task is given its own submodule (e.g. \mireval{}\texttt{.beat}), and each metric is defined as a separate function in each submodule (e.g. \mireval{}\texttt{.beat.f\char`_measure}).
 Each task submodule also includes common data pre-processing steps for the task.
 Every metric function includes detailed documentation, example usage, input validation, and references to the original paper which defined the metric.
@@ -155,7 +155,7 @@ and finally the \textbf{information gain} of the beat error histogram to a unifo
 % - Utrecht agreement
 
 Despite being one of the oldest MIREX tasks, evaluation methodology and metrics for automatic chord estimation (ACE) is an ongoing topic of discussion, due to issues with vocabularies, comparison semantics, and other lexicographical challenges unique to the task \cite{Peeters2013}.
-%For example, ISMIR 2010 saw the fondly dubbed ``Utrecht Agreement on Chord Evaluation''\footnote{http://www.music-ir.org/mirex/wiki/The\_Utrecht\_Agreement\_on\_Chord\_Evaluation}, in which interested researchers met to discuss sane ways of quantifying the performance of automatic chord recognition systems.
+%For example, ISMIR 2010 saw the fondly dubbed ``Utrecht Agreement on Chord Evaluation''\footnote{http://www.music-ir.org/mirex/wiki/The\_Utrecht\_Agreement\_on\_Chord\_Evaluation}, in which interested researchers met to discuss sane ways of quantifying the performance of automatic chord estimation systems.
 One source of difficulty stems from an inherent subjectivity in ``spelling'' a chord name and the level of detail a human observer can provide in a reference annotation \cite{McVicar}.
 As a result, a consensus has yet to be reached regarding the single best approach to comparing two sequences of chord labels, and instead are often compared over a set of rules, i.e Root, Major-Minor, and Sevenths, with or without inversions.
 
@@ -257,7 +257,7 @@ $$
 where $s_m$ is the score reported by \mireval{} and $s_c$ is the score being compared to.
 We then computed the average relative change across all examples in the obtained dataset for each score.
 
-For the beat detection, chord recognition, structural segmentation, and onset detection tasks, MIREX releases the the output of submitted algorithms, the ground truth annotations, and the reported score for each example in each data set.
+For the beat detection, chord estimation, structural segmentation, and onset detection tasks, MIREX releases the the output of submitted algorithms, the ground truth annotations, and the reported score for each example in each data set.
 We therefore can directly compare \mireval{} to MIREX for these tasks by collecting all reference and estimated annotations, computing each metric for each example, and comparing the result to the score reported by MIREX.
 We chose to compare against the results reported in MIREX 2013 for all tasks.
 
@@ -301,7 +301,7 @@ F-Measure  & Cemgil     & Goto       &  P-score   & CMLc       & CMLt       & AM
   \midrule
 \end{tabularx}
 \begin{tabularx}{\linewidth}{*{2}{>{\centering\arraybackslash}X} c *{1}{>{\centering\arraybackslash}X} c *{1}{>{\centering\arraybackslash}X} c *{1}{>{\centering\arraybackslash}X} c c}
- \multicolumn{5}{ c }{Chord Recognition} & \multicolumn{5}{ c }{Melody Extraction}\\
+ \multicolumn{5}{ c }{Chord Estimation} & \multicolumn{5}{ c }{Melody Extraction}\\
   \cmidrule(lr){1-5}
   \cmidrule(lr){6-10}
   Root       & Maj/min       & Maj/min + Inv & 7ths & 7ths + Inv & Overall & Raw Pitch & Chroma & Voicing R & Voicing FA \\
