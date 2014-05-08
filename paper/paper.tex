@@ -1,3 +1,8 @@
+% Add table captions
+% Add conclusion
+% Fill in missing segmentation explanations 
+
+
 % -----------------------------------------------
 % Template for ISMIR 2014
 % (based on earlier ISMIR templates)
@@ -270,9 +275,8 @@ We evaluated the estimated patterns using the MATLAB code released by Collins \c
 The number of algorithms, examples, and total number of scores for all tasks are summarized in Table \ref{tab:nexamples}.
 
 \begin{table}[htb]
-\label{tab:nexamples}
   \centering
-\begin{tabularx}{\columnwidth}{l c c c}
+\begin{tabularx}{\columnwidth}{l r r r}
 \toprule
 Task & Algorithms & Examples & Scores\\
 \midrule
@@ -284,6 +288,7 @@ Melody & 1 & 20 & 20 \\
 Pattern Discovery & 4 & 5 & 20 \\
 \bottomrule
 \end{tabularx}
+ \label{tab:nexamples}
 \end{table}
 
 The resulting average relative change for each metric is presented in Table \ref{tab:comparison}.
@@ -292,13 +297,12 @@ For many of the other metrics, the average relative change was less than a few t
 In the following sections, we enumerate the known implementation differences which account for the larger average relative changes.
 
 \begin{table*}[htb]
-\label{tab:comparison}
   \centering
 \begin{tabularx}{\linewidth}{c *{8}{>{\centering\arraybackslash}X}}
 \toprule
  \multicolumn{9}{ c }{Beat Detection} \\
   \cmidrule(lr){1-9}
-F-Measure  & Cemgil     & Goto       &  P-score   & CMLc       & CMLt       & AMLc       & AMLt       & In. Gain   \\
+F-measure  & Cemgil     & Goto       &  P-score   & CMLc       & CMLt       & AMLc       & AMLt       & In. Gain   \\
    0.703\% &    0.035\% &    0.054\% &    0.877\% &    0.161\% &    0.143\% &    0.137\% &    0.139\% &    9.174\% \\
   \midrule
 \end{tabularx}
@@ -321,16 +325,17 @@ F-Measure  & Cemgil     & Goto       &  P-score   & CMLc       & CMLt       & AM
  \multicolumn{5}{ c }{Chord Estimation} & \multicolumn{5}{ c }{Melody Extraction}\\
   \cmidrule(lr){1-5}
   \cmidrule(lr){6-10}
-  Root       & Maj/min       & Maj/min + Inv & 7ths & 7ths + Inv & Overall & Raw Pitch & Chroma & Voicing R & Voicing FA \\
- 0.007\% & 0.1634\% & 1.005\% & 0.483\% & 0.899\% & 0.070\% &    0.087\% &    0.114\% &    0.000\% &   10.095\% \\
+  Root       & Maj/min       & Maj/min + Inv & 7ths & 7ths + Inv & Overall & Raw pitch & Chroma & Voicing R & Voicing FA \\
+ 0.007\% & 0.163\% & 1.005\% & 0.483\% & 0.899\% & 0.070\% &    0.087\% &    0.114\% &    0.000\% &   10.095\% \\
   \bottomrule
 \end{tabularx}
+\label{tab:comparison}
 \end{table*}
 
 \subsection{Non-greedy matching of events}
 
 In the computation of the F-measure, precision and recall metrics for the beat tracking, boundary detection, and onset detection tasks, an estimated event is considered correct (a ``hit'') if it falls within a small window of a reference event.
-No estimated boundary is counted as a hit for more than one reference boundary, and vice versa.
+No estimated event is counted as a hit for more than one reference event, and vice versa.
 In MIREX, this assignment is done in a greedy fashion, however in \mireval{} we use an optimal matching strategy.
 This is accomplished by computing a maximum bipartite matching between the estimated events and the reference events (subject to the window constraint) using the Hopcroft-Karp algorithm~\cite{hopcroft1973n}.
 This explains the observed discrepancy between \mireval{} and MIREX for each of these metrics.
@@ -375,7 +380,7 @@ This is not done in MIREX (which uses the Beat Evaluation Toolbox \cite{davies20
 \subsection{Information Gain}
 
 The Information Gain metric \cite{davies2009evaluation} involves the computation a histogram of the per-beat errors.
-The Beat Evaluation Toolbox uses a non-uniform histogram binning where the first, second and last bins are smaller than the rest of the bins while \mireval{} uses a standard uniformly-binned histogram.
+The Beat Evaluation Toolbox (and therefore MIREX) uses a non-uniform histogram binning where the first, second and last bins are smaller than the rest of the bins while \mireval{} uses a standard uniformly-binned histogram.
 As a result, the Information Gain score reported by \mireval{} differs substantially from that reported by MIREX.
 
 \subsection{Voicing False Alarm Rate}
