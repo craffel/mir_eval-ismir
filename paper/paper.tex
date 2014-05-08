@@ -74,8 +74,8 @@
 \begin{abstract}
 Central to the field of MIR research is the evaluation of algorithms used to extract information from music data.
 We present \mireval{}, an open source software library which provides a transparent and easy-to-use implementation of the most common metrics used to measure the performance of MIR algorithms.
-In the present work, we enumerate the metrics implemented by \mireval{} and quantitatively compare each to an existing implementation.
-When the score reported by \mireval{} differs substantially from the reference, we detail the differences in implementation.
+In this paper, we enumerate the metrics implemented by \mireval{} and quantitatively compare each to  existing implementations.
+When the scores reported by \mireval{} differ substantially from the reference, we detail the differences in implementation.
 We also provide a brief overview of \mireval{}'s architecture, design, and intended use.
 \end{abstract}
 %
@@ -99,7 +99,7 @@ The NEMA codebase includes multiple programming languages and dependencies (some
 %
 %Due to its scale, characteristics, and intended use, 
 In consequence, the NEMA system is rarely used for evaluating MIR algorithms outside of the setting of MIREX \cite{downie2008music}.
-Instead, researchers typically create their own implementations of common metrics for evaluating their algorithms.
+Instead, researchers often create their own implementations of common metrics for evaluating their algorithms.
 These implementations are thus not standardized, and may contain differences in details, or even bugs, that confound comparisons.
 
 These factors motivate the development of a standardized software package which implements the most common metrics used to evaluate MIR systems.
