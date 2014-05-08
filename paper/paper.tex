@@ -269,6 +269,23 @@ For pattern discovery, we used the development dataset released by Collins \cite
 We evaluated the estimated patterns using the MATLAB code released by Collins \cite{Collins2013}.
 The number of algorithms, examples, and total number of scores for all tasks are summarized in Table \ref{tab:nexamples}.
 
+\begin{table}[htb]
+\label{tab:nexamples}
+  \centering
+\begin{tabularx}{\columnwidth}{l c c c}
+\toprule
+Task & Algorithms & Examples & Scores\\
+\midrule
+Beat Detection & 20 & 679 & 13580\\
+Segmentation & 8 & 1397 & 11176 \\
+Onset Detection & 11 & 85 & 935 \\
+Chord Estimation & 12 & 217 & 2604 \\
+Melody & 1 & 20 & 20 \\
+Pattern Discovery & 4 & 5 & 20 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
 The resulting average relative change for each metric is presented in Table \ref{tab:comparison}.
 The average relative change for all of the pattern discovery metrics was 0, so they are not included in this table.
 For many of the other metrics, the average relative change was less than a few tenths of a percent, indicating that \mireval{} is equivalent up to rounding/precision errors.
