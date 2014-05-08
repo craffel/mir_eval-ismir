@@ -1,5 +1,3 @@
-% Add conclusion
-% Fill in missing segmentation explanations 
 % Switch chord footnote to ref
 
 
@@ -396,10 +394,14 @@ This chord alone causes an observable difference between the results of our impl
 \section{Discussion}
 \label{sec:discussion}
 
-% Community development is crucial
-As seen in the case of evaluating chord estimation systems, it is our hope that an open-source, publicly refined implementation might help resolve independently performed evaluation in the future. 
-Furthermore, the difficulty faced in attempting to match the MIREX chord evaluation precisely clearly demonstrates the need for transparency and community involvement in comparative evaluation.
-%; and two, we are curious as to how reliability of independently reported results in the literature.
+The results in Section \ref{sec:comparison} clearly demonstrate that differences in implementation can lead to substantial differences in reported scores.
+This underlines the need for transparency and community involvement in comparative evaluation.
+The primary motivation behind developing \mireval{} is to establish an open-source, publicly refined implementation of the most common MIR metrics.
+By encouraging MIR researchers to use the same easily understandable evaluation codebase, we can ensure that different systems are being compared fairly.
+
+While we have given thorough consideration to the design choices made in \mireval{}, we recognize that standards may change over time and that new metrics may be proposed.
+Towards this end, \mireval{} is hosted on Github\footnote{URL redacted}, which provides a straightforward way of proposing changes to the codebase using the Pull Request feature.
+With active community participation, we believe that \mireval{} can ensure that MIR research converges on a standard methodology for evaluation.
 
 \bibliography{mir_eval}
 
