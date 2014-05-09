@@ -119,7 +119,7 @@ The \textbf{F-measure} of the beat sequence, where an estimated beat is consider
 \textbf{Goto's score}, a binary score which is 1 when at least 25\% of the estimated beat sequence closely matches the reference beat sequence;
 \textbf{McKinney's P-score}, which computes the cross-correlation of the estimated and reference beat sequences represented as impulse trains;
 \textbf{continuity-based scores} which compute the proportion of the beat sequence which is continuously correct;
-and finally the \textbf{information gain} of the normalized beat error histogram to a uniform distribution.
+and finally the \textbf{Information Gain} of a normalized beat error histogram over a uniform distribution.
 
 \subsection{Chord Estimation}
 
@@ -130,7 +130,7 @@ As a result, a consensus has yet to be reached regarding the single best approac
 To efficiently compare chords, we first separate a given chord label into a its constituent parts, based on the syntax of \cite{harte2010towards}.
 For example, the chord label \texttt{G:maj(6)/5} is mapped to three pieces of information: the root (``G''), the root-invariant active semitones as determined by the quality shorthand (``maj'') and scale degrees (``6''), and the bass interval (``5'').
 
-Based on this representation, we can define our interpretation of the five rules used in MIREX 2013\cite{choi2013mirex} to compare an estimated chord label with a reference by the following rules:
+Based on this representation, we can compare an estimated chord label with a reference by the following rules as used in MIREX 2013\cite{choi2013mirex}:
 \textbf{Root} requires only that the roots are equivalent;
 \textbf{Major-Minor} includes Root, and further requires that the active semitones are equivalent subject to the reference chord quality being Maj or min;
 \textbf{Sevenths} follows Major-minor, but is instead subject to the reference chord quality being one of Maj, min, Maj7, min7, 7, or minmaj7;
@@ -139,7 +139,7 @@ The ``subject to...'' conditions above indicate that a comparison is \emph{ignor
 
 Track-wise scores are computed by weighting each comparison by the duration of its interval, over all intervals in an audio file; stated another way, this is the piecewise continuous-time integral of the equivalence of two chord sequences.
 This is achieved by forming the union of the boundaries in each sequence, sampling the labels, and summing the time intervals of the ``correct'' ranges. 
-The cumulative score, referred to as \emph{weighted chord symbol recall} (WCSR), is tallied over a set audio files, by discrete summation, where the importance of each score is weighted by the duration of each annotation \cite{choi2013mirex}.
+The cumulative score, referred to as \emph{weighted chord symbol recall}, is tallied over a set audio files by discrete summation, where the importance of each score is weighted by the duration of each annotation \cite{choi2013mirex}.
  
 \subsection{Pattern Discovery}
 
@@ -152,7 +152,7 @@ Nonetheless, Collins compiled all previously existent metrics and proposed novel
 \textbf{Establishment F-measure, Precision, and Recall}, which computes the number of reference patterns that were successfully found, no matter how many occurrences were found;
 \textbf{Occurrence F-measure, Precision, and Recall}, which measures whether an algorithm is able to retrieve all occurrences of a pattern;
 \textbf{Three-layer F-measure, Precision, and Recall}, which capture both the establishment of the patterns and the occurrence retrieval in a single set of scores;
-and the \textbf{First $N$ patterns metrics}, where the target proportion establishment recall and three-layer precision analyzing the first $N$ patterns only, which measures the ability of the algorithm to sort the identified patterns based on their relevance. 
+and the \textbf{First $N$ patterns metrics}, which computes the target proportion establishment recall and three-layer precision for the first $N$ patterns only in order to measure the ability of the algorithm to sort the identified patterns based on their relevance. 
 
 \subsection{Structural Segmentation}
 
@@ -163,12 +163,12 @@ The estimated labels may be arbitrary strings --- such as $A$, $B$, $C$, \etc{} 
 In both tasks, we assume that annotations express a partitioning of the track into intervals.
 
 \mireval{} implements the following boundary detection metrics:
-\textbf{Boundary detection precision, recall, and F-measure scores} where an estimated boundary is considered correct if it falls within a window around a reference boundary \cite{turnbull2007supervised};
-\textbf{Boundary deviation} which computes median absolute time difference from a reference boundary to its nearest estimated boundary, and vice versa \cite{turnbull2007supervised}
+\textbf{Boundary Detection Precision, Recall, and F-measure Scores} where an estimated boundary is considered correct if it falls within a window around a reference boundary \cite{turnbull2007supervised};
+and \textbf{Boundary Deviation} which computes median absolute time difference from a reference boundary to its nearest estimated boundary, and vice versa \cite{turnbull2007supervised}.
 The following structure annotation metrics are also included:
-\textbf{Pairwise classification precision, recall, and F-measure scores} for classifying pairs of sampled time instants as belonging to the same structural component~\cite{levy2008structural};
-\textbf{Rand index}\footnote{The MIREX results page refers to Rand index as ``random clustering index''.} which clusters reference and estimated annotations and compares themby the Rand index ~\cite{rand1971objective};
-and the \textbf{Normalized conditional entropy} where sampled reference and estimated labels are interpreted as samples of random variables $Y_R, Y_E$ from which the conditional entropy of $Y_R$ given $Y_E$ (\emph{under-segmentation}) and $Y_E$ given $Y_R$  (\emph{over-segmentation}) are estimated \cite{lukashevich2008towards}.
+\textbf{Pairwise Classification Precision, Recall, and F-measure Scores} for classifying pairs of sampled time instants as belonging to the same structural component~\cite{levy2008structural};
+\textbf{Rand Index}\footnote{The MIREX results page refers to Rand Index as ``random clustering index''.} which clusters reference and estimated annotations and compares them by the Rand Index \cite{rand1971objective};
+and the \textbf{Normalized Conditional Entropy} where sampled reference and estimated labels are interpreted as samples of random variables $Y_R, Y_E$ from which the conditional entropy of $Y_R$ given $Y_E$ (\textbf{Under-Segmentation}) and $Y_E$ given $Y_R$  (\textbf{Over-Segmentation}) are estimated \cite{lukashevich2008towards}.
 
 \subsection{Melody Extraction}
 
@@ -180,13 +180,13 @@ An estimated pitch series is evaluated against a reference by computing the foll
 \textbf{Raw Pitch Accuracy} which computes the proportion of melody frames in the reference for which the frequency is considered correct (i.e.~within half a semitone of the reference frequency);
 \textbf{Raw Chroma Accuracy} where the estimated and reference $f_0$ sequences are mapped onto a single octave before computing the raw pitch accuracy;
 and the \textbf{Overall Accuracy}, which computes the proportion of all frames correctly estimated by the algorithm, including whether non-melody frames where labeled by the algorithm as non-melody.
-Prior to computing the measure definitions provided above, both the estimate and reference sequences must be sampled on the same timebase.
+Prior to computing these metrics, both the estimate and reference sequences must be sampled on the same timebase.
 
 \subsection{Onset Detection}
 
 The goal of an onset detection algorithm is to automatically determine when notes are played in a piece of music.
 As is also done in beat tracking and segment boundary detection, the primary method used to evaluate onset detectors is to first determine which estimated onsets are ``correct'', where correctness is defined as being within a small window of a reference onset \cite{bock2012evaluating}.
-From this, \textbf{precision}, \textbf{recall}, and \textbf{F-measure} scores are computed.
+From this, \textbf{Precision}, \textbf{Recall}, and \textbf{F-measure} scores are computed.
 
 \section{Comparison to Existing Implementations}
 \label{sec:comparison}
@@ -271,13 +271,13 @@ F-measure  & Cemgil     & Goto       &  P-score   & CMLc       & CMLt       & AM
  0.007\% & 0.163\% & 1.005\% & 0.483\% & 0.899\% & 0.070\% &    0.087\% &    0.114\% &    0.000\% &   10.095\% \\
   \bottomrule
 \end{tabularx}
- \caption{Average relative change for every metric in \mireval{} when compared to a pre-existing implementation.}
+ \caption{Average relative change for every metric in \mireval{} when compared to a pre-existing implementation.  The average relative change for all pattern discovery metrics was 0, so they are not shown here.}
 \label{tab:comparison}
 \end{table*}
 
 \subsection{Non-greedy matching of events}
 
-In the computation of the F-measure, precision and recall metrics for the beat tracking, boundary detection, and onset detection tasks, an estimated event is considered correct (a ``hit'') if it falls within a small window of a reference event.
+In the computation of the F-measure, Precision and Recall metrics for the beat tracking, boundary detection, and onset detection tasks, an estimated event is considered correct (a ``hit'') if it falls within a small window of a reference event.
 No estimated event is counted as a hit for more than one reference event, and vice versa.
 In MIREX, this assignment is done in a greedy fashion, however in \mireval{} we use an optimal matching strategy.
 This is accomplished by computing a maximum bipartite matching between the estimated events and the reference events (subject to the window constraint) using the Hopcroft-Karp algorithm~\cite{hopcroft1973n}.
@@ -287,8 +287,8 @@ In all cases where the metric differs, \mireval{} reports a higher score, indica
 \subsection{McKinney's P-score}
 
 When computing McKinney's P-score \cite{davies2009evaluation}, the beat sequences are first converted to impulse trains sampled at a 10 millisecond resolution.
-Because this sampling involves quantizing the beat times to a 10ms grid, shifting both beat sequences by a constant offset can result in substantial changes in the P-score.
-As a result, In \mireval{}, we normalize the beat sequences by subtracting from each reference and estimated beat location the minimum beat location in either series.
+Because this sampling involves quantizing the beat times, shifting both beat sequences by a constant offset can result in substantial changes in the P-score.
+As a result, in \mireval{}, we normalize the beat sequences by subtracting from each reference and estimated beat location the minimum beat location in either series.
 In this way, the smallest beat in the estimated and reference beat sequences is always $0$ and the metric remains the same even when both beat sequences have a constant offset applied.
 This is not done in MIREX (which uses the Beat Evaluation Toolbox \cite{davies2009evaluation}), and as a result, we observe a considerable average relative change for the P-score metric.
 
@@ -307,29 +307,29 @@ This accounts for the discrepancy in the reference-to-estimated and estimated-to
 
 \subsection{Interval Sampling for Structure Metrics}
 
-When computing the structure annotation metrics (pairwise precision, recall, and F-measure, Rand index, and normalized conditional entropy over- and under-segmentation scores), the reference and estimated labels must be sampled to a common timebase.
-In MIREX, a fixed sampling grid is used for the Rand index and pairwise classification metrics, but a different sampling rate is used for each, while a fixed number of samples is used for the conditional entropy scores.
+When computing the structure annotation metrics (Pairwise Precision, Recall, and F-measure, Rand Index, and Normalized Conditional Entropy Over- and Under-Segmentation Scores), the reference and estimated labels must be sampled to a common timebase.
+In MIREX, a fixed sampling grid is used for the Rand Index and pairwise classification metrics, but a different sampling rate is used for each, while a fixed number of samples is used for the conditional entropy scores.
 In \mireval{}, the same fixed sampling rate of 100 milliseconds is used for all structure annotation metrics, as specified in \cite{willis2013mirex}.
 
-Furthermore, the start and end time over which the intervals are sampled depends on both the reference and estimated intervals while \mireval{}, always samples with respect to the reference to ensure fair comparison across multiple estimates.
+Furthermore, the start and end time over which the intervals are sampled depends on both the reference and estimated intervals while \mireval{} always samples with respect to the reference to ensure fair comparison across multiple estimates.
 This additionally requires that estimated intervals are adjusted to span the exact duration specified by the reference intervals.
 This is done by adding synthetic intervals when the estimated intervals do not span the reference intervals or otherwise trimming estimated intervals.
 These differences account for the average relative changes for the structure annotation metrics.
 
-\subsection{Segment Normalized Conditional Entropy Scores}
+\subsection{Segment Normalized Conditional Entropy}
 
 When adding intervals to the estimated annotation as described above, \mireval{} ensures that the labels do not conflict with existing labels.
-This has the effect of changing the normalization constant in the normalized conditional entropy scores.
-Furthermore, when there's only one label, the normalized conditional entropy scores are not well defined.
+This has the effect of changing the normalization constant in the Normalized Conditional Entropy scores.
+Furthermore, when there's only one label, the Normalized Conditional Entropy scores are not well defined.
 MIREX assigns a score of 1 in this case; in \mireval{} we assign a score of 0.
 This results in a larger average change for these two metrics.
 
 \subsection{Melody Voicing False Alarm Rate}
 
-When a reference melody annotation contains no unvoiced frames, the voicing false alarm rate is not well defined.
+When a reference melody annotation contains no unvoiced frames, the Voicing False Alarm Rate is not well defined.
 MIREX assigns a score of 1 in this case, while \mireval{} assigns a score of 0 because, intuitively, no reference unvoiced frames could be estimated, so no false alarms should be reported.
 In the data set over which the average relative change for the melody metrics was computed, one reference annotation contained no unvoiced frames.
-This discrepancy caused a large inflation of the average relative change reported for the voicing false alarm rate due to the small number of examples in our dataset.
+This discrepancy caused a large inflation of the average relative change reported for the Voicing False Alarm Rate due to the small number of examples in our dataset.
 
 \subsection{Weighted Chord Symbol Recall}
 The non-negligible average relative changes seen in the chord metrics are caused by two main sources of ambiguity.
@@ -340,7 +340,7 @@ While the quality shorthand indicates ``major'', the asterisk implies the root i
 %Some chords get dropped in different scenarios, and we can't replicate the logic. 
 Second, and more importantly, such chords are likely ignored during evaluation, and we are unable to replicate the exact exclusion logic used by MIREX.
 This has proven to be particularly difficult in the two inversion rules, and manifests in Table \ref{tab:comparison}. 
-For example, it seems as though \texttt{Bb:maj(9)/9} was \emph{not} excluded from the MIREX evaluation, contradicting the description provided by the task specification \cite{choi2013mirex}.
+For example, \texttt{Bb:maj(9)/9} was \emph{not} excluded from the MIREX evaluation, contradicting the description provided by the task specification \cite{choi2013mirex}.
 This chord alone causes an observable difference between \mireval{} and MIREX's results.
 
 \section{Towards Transparency and Community Involvement}
