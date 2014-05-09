@@ -163,7 +163,7 @@ One source of difficulty stems from an inherent subjectivity in ``spelling'' a c
 As a result, a consensus has yet to be reached regarding the single best approach to comparing two sequences of chord labels, and instead are often compared over a set of rules, i.e Root, Major-Minor, and Sevenths, with or without inversions.
 
 To efficiently compare chords, we first translate a given chord label $\mathcal{C}$ into a numerical representation, based on the syntax of \cite{Harte2010}.
-For example, $G:maj(6)/5$ is mapped to three pieces of information: one, the root (``G'') is mapped to an absolute pitch class $\mathcal{R}$, in $[0, 11]$, where $C\to0$, $C\sharp/D\flat\to1$, etc; two, the quality shorthand (``maj'') and scale degrees (``6'') are mapped to a root-invariant bit vector $\mathcal{S}$ of active semitones; and three, the bass interval (``5'') is translated to the relative scale degree in semitones $\mathcal{B}$.
+For example, the chord label \texttt{G:maj(6)/5} is mapped to three pieces of information: one, the root (``G'') is mapped to an absolute pitch class $\mathcal{R}$, in $[0, 11]$, where C $\to0$, C$\sharp$/D$\flat$ $\to1$, etc; two, the quality shorthand (``maj'') and scale degrees (``6'') are mapped to a root-invariant bit vector $\mathcal{S}$ of active semitones; and three, the bass interval (``5'') is translated to the relative scale degree in semitones $\mathcal{B}$.
 %Traditionally, extended chords (9's, 11's or 13's) are not considered in evaluation and instead resolved to the tetrad contained therein, e.g. $C:9 \to C:7$, etc. 
 %This semitone bit-vector representation can, however, be easily expanded to represent such information in the future.
 
@@ -381,12 +381,12 @@ This discrepancy caused a large inflation of the average relative change reporte
 The non-negligible average relative changes seen in the chord metrics are caused by two main sources of ambiguity.
 %Some interval mappings aren't well-defined.
 First, we find some chord labels in the MIREX reference annotations lack well-defined, i.e. singular, mappings into a comparison space. 
-One such example is $D:maj(*1)/\#1$.
-While the quality shorthand indicates ``major'', the asterisk implies the root is omitted and thus it is unclear whether $D:maj(*1)/\#1==D:maj1$.
+One such example is \texttt{D:maj(*1)/\#1}.
+While the quality shorthand indicates ``major'', the asterisk implies the root is omitted and thus it is unclear whether \texttt{D:maj(*1)/\#1} is equivalent to \texttt{D:maj1}.
 %Some chords get dropped in different scenarios, and we can't replicate the logic. 
 Second, and more importantly, such chords are likely ignored during evaluation, and we are unable to replicate the exact exclusion logic used by MIREX \cite{choi2013mirex}.
 This has proven to be particularly difficult in the two inversion rules, and manifests in Table \ref{tab:comparison}. 
-For example, it seems as though $Bb:maj(9)/9$ was \emph{not} excluded from the MIREX evaluation, contradicting the description provided online.
+For example, it seems as though \texttt{Bb:maj(9)/9} was \emph{not} excluded from the MIREX evaluation, contradicting the description provided online.
 This chord alone causes an observable difference between the results of our implementation and previously reported results.
 
 \section{Towards Transparency and Community Involvement}
