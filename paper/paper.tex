@@ -384,10 +384,10 @@ First, we find some chord labels in the MIREX reference annotations lack well-de
 One such example is \texttt{D:maj(*1)/\#1}.
 While the quality shorthand indicates ``major'', the asterisk implies the root is omitted and thus it is unclear whether \texttt{D:maj(*1)/\#1} is equivalent to \texttt{D:maj1}.
 %Some chords get dropped in different scenarios, and we can't replicate the logic. 
-Second, and more importantly, such chords are likely ignored during evaluation, and we are unable to replicate the exact exclusion logic used by MIREX \cite{choi2013mirex}.
+Second, and more importantly, such chords are likely ignored during evaluation, and we are unable to replicate the exact exclusion logic used by MIREX.
 This has proven to be particularly difficult in the two inversion rules, and manifests in Table \ref{tab:comparison}. 
-For example, it seems as though \texttt{Bb:maj(9)/9} was \emph{not} excluded from the MIREX evaluation, contradicting the description provided online.
-This chord alone causes an observable difference between the results of our implementation and previously reported results.
+For example, it seems as though \texttt{Bb:maj(9)/9} was \emph{not} excluded from the MIREX evaluation, contradicting the description provided by the task specification \cite{choi2013mirex}.
+This chord alone causes an observable difference between \mireval{} and MIREX's results.
 
 \section{Towards Transparency and Community Involvement}
 \label{sec:discussion}
