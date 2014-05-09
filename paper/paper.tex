@@ -157,12 +157,12 @@ and finally the \textbf{information gain} of the normalized beat error histogram
 % - mirex 
 % - Utrecht agreement
 
-Despite being one of the oldest MIREX tasks, evaluation methodology and metrics for automatic chord estimation (ACE) is an ongoing topic of discussion, due to issues with vocabularies, comparison semantics, and other lexicographical challenges unique to the task \cite{Peeters2013}.
+Despite being one of the oldest MIREX tasks, evaluation methodology and metrics for automatic chord estimation (ACE) is an ongoing topic of discussion, due to issues with vocabularies, comparison semantics, and other lexicographical challenges unique to the task \cite{pauwels2013evaluating}.
 %For example, ISMIR 2010 saw the fondly dubbed ``Utrecht Agreement on Chord Evaluation''\footnote{http://www.music-ir.org/mirex/wiki/The\_Utrecht\_Agreement\_on\_Chord\_Evaluation}, in which interested researchers met to discuss sane ways of quantifying the performance of automatic chord estimation systems.
-One source of difficulty stems from an inherent subjectivity in ``spelling'' a chord name and the level of detail a human observer can provide in a reference annotation \cite{McVicar}.
+One source of difficulty stems from an inherent subjectivity in ``spelling'' a chord name and the level of detail a human observer can provide in a reference annotation \cite{ni2013understanding}.
 As a result, a consensus has yet to be reached regarding the single best approach to comparing two sequences of chord labels, and instead are often compared over a set of rules, i.e Root, Major-Minor, and Sevenths, with or without inversions.
 
-To efficiently compare chords, we first translate a given chord label $\mathcal{C}$ into a numerical representation, based on the syntax of \cite{Harte2010}.
+To efficiently compare chords, we first translate a given chord label $\mathcal{C}$ into a numerical representation, based on the syntax of \cite{harte2010towards}.
 For example, the chord label \texttt{G:maj(6)/5} is mapped to three pieces of information: one, the root (``G'') is mapped to an absolute pitch class $\mathcal{R}$, in $[0, 11]$, where C $\to0$, C$\sharp$/D$\flat$ $\to1$, etc; two, the quality shorthand (``maj'') and scale degrees (``6'') are mapped to a root-invariant bit vector $\mathcal{S}$ of active semitones; and three, the bass interval (``5'') is translated to the relative scale degree in semitones $\mathcal{B}$.
 %Traditionally, extended chords (9's, 11's or 13's) are not considered in evaluation and instead resolved to the tetrad contained therein, e.g. $C:9 \to C:7$, etc. 
 %This semitone bit-vector representation can, however, be easily expanded to represent such information in the future.
