@@ -194,7 +194,7 @@ Pattern discovery involves the identification of musical patterns (i.e. short fr
 The metrics used to evaluation pattern discovery systems attempt to quantify the ability of the algorithm to not only determine the presents pattern in a piece, but also to find all of their occurrences.
 Given the novelty of this task (the first year it appeared in MIREX was 2013), the evaluation metrics are likely to be modified in further editions.
 Nonetheless, Collins compiled all previously existent metrics and proposed novel ones \cite{Collins2013}, which resulted in 19 different scores, each one implemented in \mireval{}:
-\textbf{Standard F-measure, Precision, and Recall}, where an estimated pattern is considered correct only if it matches (up to translation) a reference prototype pattern;
+\textbf{Standard F-measure, Precision, and Recall}, where an estimated prototype pattern is considered correct only if it matches (up to translation) a reference prototype pattern;
 \textbf{Establishment F-measure, Precision, and Recall}, which computes the number of reference patterns that were successfully found, no matter how many occurrences were found;
 \textbf{Occurrence F-measure, Precision, and Recall}, which measures whether an algorithm is able to retrieve all occurrences of a pattern;
 \textbf{Three-layer F-measure, Precision, and Recall}, which capture both the establishment of the patterns and the occurrence retrieval in a single set of scores;
@@ -378,9 +378,7 @@ In the data set over which the average relative change for the melody metrics wa
 This discrepancy caused a large inflation of the average relative change reported for the voicing false alarm rate due to the small number of examples in our dataset.
 
 \subsection{Weighted Chord Symbol Recall}
-For reference, we compare our chord evaluation against the results provided from MIREX 2013.
-Though the \textbf{Root} comparison falls well within our accuracy tolerance, the other four comparison rules exhibit non-negligible discrepancies that warrant justification.
-Based on our current understanding, implementation differences are caused by two main sources of ambiguity.
+The non-negligible average relative changes seen in the chord metrics are caused by two main sources of ambiguity.
 %Some interval mappings aren't well-defined.
 First, we find some chord labels in the MIREX reference annotations lack well-defined, i.e. singular, mappings into a comparison space. 
 One such example is $D:maj(*1)/\#1$.
