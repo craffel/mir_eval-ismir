@@ -167,7 +167,7 @@ For example, $G:maj(6)/5$ is mapped to three pieces of information: one, the roo
 %Traditionally, extended chords (9's, 11's or 13's) are not considered in evaluation and instead resolved to the tetrad contained therein, e.g. $C:9 \to C:7$, etc. 
 %This semitone bit-vector representation can, however, be easily expanded to represent such information in the future.
 
-Based on this representation, we can symbolically define our interpretation of the five rules used in MIREX 2013\footnote{http://www.music-ir.org/mirex/wiki/2013:Audio\_Chord\_Estimation} to compare an estimated chord $\mathcal{C}_{est}$ with a reference $\mathcal{C}_{ref}$.
+Based on this representation, we can symbolically define our interpretation of the five rules used in MIREX 2013\cite{choi2013mirex} to compare an estimated chord $\mathcal{C}_{est}$ with a reference $\mathcal{C}_{ref}$.
 \textbf{Root} is given by $\mathcal{R}_{est} == \mathcal{R}_{ref}$, for all chords.
 \textbf{Major-Minor} includes \textbf{Root}, plus $\mathcal{S}_{est} == \mathcal{S}_{ref}$ subject to $\mathcal{S}_{ref} \in \{Maj, min\}$.
 \textbf{Major-Minor-Inv} includes \textbf{Major-minor}, plus $\mathcal{B}_{est} == \mathcal{B}_{ref}$ subject to $\mathcal{B}_{ref} \in \mathcal{S}_{ref}$.
@@ -384,7 +384,7 @@ First, we find some chord labels in the MIREX reference annotations lack well-de
 One such example is $D:maj(*1)/\#1$.
 While the quality shorthand indicates ``major'', the asterisk implies the root is omitted and thus it is unclear whether $D:maj(*1)/\#1==D:maj1$.
 %Some chords get dropped in different scenarios, and we can't replicate the logic. 
-Second, and more importantly, such chords are likely ignored during evaluation, and we are unable to replicate the exact exclusion logic used by MIREX. 
+Second, and more importantly, such chords are likely ignored during evaluation, and we are unable to replicate the exact exclusion logic used by MIREX \cite{choi2013mirex}.
 This has proven to be particularly difficult in the two inversion rules, and manifests in Table \ref{tab:comparison}. 
 For example, it seems as though $Bb:maj(9)/9$ was \emph{not} excluded from the MIREX evaluation, contradicting the description provided online.
 This chord alone causes an observable difference between the results of our implementation and previously reported results.
