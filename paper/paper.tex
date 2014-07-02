@@ -70,7 +70,7 @@ Unfortunately, this comparison can be confounded by small details of the impleme
 
 % MIREX is the standard, but it's not community-developed, not transparent, not well-documented, uses multiple languages, is coupled to NEMA, not easy to use, dependencies, not used outside of MIREX, etc.
 For the past 10 years, the yearly Music Information Retrieval Evaluation eXchange (MIREX) has been a forum for comparing MIR algorithms over common datasets \cite{downie2008music}.
-By providing a standardized shared-task setting, MIREX has become critically useful to track progress in MIR research.
+By providing a standardized shared-task setting, MIREX has become critically useful for tracking progress in MIR research.
 MIREX is built upon the Networked Environment for Music Analysis (NEMA) \cite{west2010networked}, a large-scale system which includes exhaustive functionality for evaluating, summarizing, and displaying evaluation results.
 The NEMA codebase includes multiple programming languages and dependencies (some of which, \eg{} Matlab, are proprietary) so compiling and running it at individual sites is nontrivial. 
 %
@@ -91,13 +91,13 @@ Finally, we discuss and summarize our contributions in Section \ref{sec:discussi
 \section{\mireval{}'s architecture}
 \label{sec:architecture}
 
-\mireval{} is a Python library which includes metrics for the following tasks: Beat detection, chord estimation, pattern discovery, structural segmentation, melody extraction, and onset detection.
+\mireval{} is a Python library which currently includes metrics for the following tasks: Beat detection, chord estimation, pattern discovery, structural segmentation, melody extraction, and onset detection.
 Each task is given its own submodule, and each metric is defined as a separate function in each submodule.
 Each task submodule also includes common data pre-processing steps for the task.
 Every metric function includes detailed documentation, example usage, input validation, and references to the original paper which defined the metric.
 \mireval{} also includes a submodule \texttt{io} which provides convenience functions for loading in task-specific data from common file formats (\eg{} comma/tab separated values, \texttt{.lab} files \cite{harte2010towards}, \etc{}).
 For readability, all code follows the PEP8 style guide\cite{van2001pep}.
-\mireval{}'s only dependencies outside of the Python standard library are the free and open-source SciPy/Numpy\cite{jones2001scipy} and scikit-learn\cite{pedregosa2011scikit} Python libraries.
+\mireval{}'s only dependencies outside of the Python standard library are the free and open-source \texttt{SciPy}/\texttt{Numpy}\cite{jones2001scipy} and \texttt{scikit-learn}\cite{pedregosa2011scikit} Python libraries.
 
 In order to simplify the usage of \mireval{}, it is packaged with a set of ``evaluator'' scripts, one for each task.
 These scripts include all code necessary to load in data, pre-process it, and compute all metrics for a given task.
@@ -114,7 +114,7 @@ Due to space constraints, we only give high-level descriptions for each metric; 
 
 The aim of a beat detection algorithm is to report the times at which a typical human listener might tap their foot to a piece of music.
 As a result, most metrics for evaluating the performance of beat tracking systems involve computing the error between the estimated beat times and some reference list of beat locations.
-Many metrics additionally compare the beat sequences at different metric levels in order to deal with the ambiguity of tempo \cite{levy2011improving}.
+Many metrics additionally compare the beat sequences at different metric levels in order to deal with the ambiguity of tempo \cite{davies2009evaluation}.
 
 \mireval{} includes the following metrics for beat tracking, which are defined in detail in \cite{davies2009evaluation}:
 The \textbf{F-measure} of the beat sequence, where an estimated beat is considered correct if it is sufficiently close to a reference beat;
@@ -140,7 +140,7 @@ Based on this representation, we can compare an estimated chord label with a ref
 and finally, \textbf{Major-Minor-Inv} and \textbf{Sevenths-Inv} include Major-Minor and Sevenths respectively, but further require that the bass intervals are equivalent subject to the reference bass interval being an active semitone.
 The ``subject to...'' conditions above indicate that a comparison is \emph{ignored} during evaluation if the given criteria is not satisfied.
 
-Track-wise scores are computed by weighting each comparison by the duration of its interval, over all intervals in an audio file; stated another way, this is the piecewise continuous-time integral of the equivalence of two chord sequences.
+Track-wise scores are computed by weighting each comparison by the duration of its interval, over all intervals in an audio file.
 This is achieved by forming the union of the boundaries in each sequence, sampling the labels, and summing the time intervals of the ``correct'' ranges. 
 The cumulative score, referred to as \emph{weighted chord symbol recall}, is tallied over a set audio files by discrete summation, where the importance of each score is weighted by the duration of each annotation \cite{choi2013mirex}.
  
@@ -148,9 +148,8 @@ The cumulative score, referred to as \emph{weighted chord symbol recall}, is tal
 
 Pattern discovery involves the identification of musical patterns (\ie{} short fragments or melodic ideas that repeat at least twice) both from audio and symbolic representations.
 The metrics used to evaluation pattern discovery systems attempt to quantify the ability of the algorithm to not only determine the present patterns in a piece, but also to find all of their occurrences.
-Given the novelty of this task (the first year it appeared in MIREX was 2013), the evaluation metrics are likely to be modified in further editions.
 
-Nonetheless, Collins compiled all previously existent metrics and proposed novel ones \cite{Collins2013}, which resulted in 19 different scores, each one implemented in \mireval{}:
+Collins compiled all previously existent metrics and proposed novel ones \cite{Collins2013} which resulted in 19 different scores, each one implemented in \mireval{}:
 \textbf{Standard F-measure, Precision, and Recall}, where an estimated prototype pattern is considered correct only if it matches (up to translation) a reference prototype pattern;
 \textbf{Establishment F-measure, Precision, and Recall}, which computes the number of reference patterns that were successfully found, no matter how many occurrences were found;
 \textbf{Occurrence F-measure, Precision, and Recall}, which measures whether an algorithm is able to retrieve all occurrences of a pattern;
@@ -176,14 +175,13 @@ and the \textbf{Normalized Conditional Entropy} where sampled reference and esti
 \subsection{Melody Extraction}
 
 Melody extraction algorithms aim to produce a sequence of frequency values corresponding to the pitch of the dominant melody from a musical recording \cite{salamon:MelodyReview:IEEESPM13}.
-Melody annotations are represented as time series of fundamental frequency ($f_0$) values in Hz sampled at discrete points (``frames'') in time.
-An estimated pitch series is evaluated against a reference by computing the following five measures defined in \cite{salamon:MelodyReview:IEEESPM13}, first used in the MIREX 2005 Automatic Melody Extraction evaluation \cite{polinerMelodyEval}:
+An estimated pitch series is evaluated against a reference by computing the following five measures defined in \cite{salamon:MelodyReview:IEEESPM13}, first used in MIREX 2005 \cite{polinerMelodyEval}:
 \textbf{Voicing Recall Rate} which computes the proportion of frames labeled as melody frames in the reference that are estimated as melody frames by the algorithm;
 \textbf{Voicing False Alarm Rate} which computes the proportion of frames labeled as non-melody in the reference that are mistakenly estimated as melody frames by the algorithm;
 \textbf{Raw Pitch Accuracy} which computes the proportion of melody frames in the reference for which the frequency is considered correct (\ie{} within half a semitone of the reference frequency);
 \textbf{Raw Chroma Accuracy} where the estimated and reference $f_0$ sequences are mapped onto a single octave before computing the raw pitch accuracy;
 and the \textbf{Overall Accuracy}, which computes the proportion of all frames correctly estimated by the algorithm, including whether non-melody frames where labeled by the algorithm as non-melody.
-Prior to computing these metrics, both the estimate and reference sequences must be sampled on the same timebase.
+Prior to computing these metrics, both the estimate and reference sequences must be sampled onto the same timebase.
 
 \subsection{Onset Detection}
 
@@ -197,20 +195,20 @@ From this, \textbf{Precision}, \textbf{Recall}, and \textbf{F-measure} scores ar
 In order to validate the design choices made in \mireval{}, it is useful to compare the scores it reports to those reported by an existing evaluation system.
 Beyond pinpointing intentional differences in implementation, this process can also help find and fix bugs in either \mireval{} or the system it is being compared to.
 
-For each task covered by \mireval{}, we obtained a collection of reference and estimated annotations and computed a score for each metric using \mireval{} and the evaluation system being compared to.
+For each task covered by \mireval{}, we obtained a collection of reference and estimated annotations and computed or obtained a score for each metric using \mireval{} and the evaluation system being compared to.
 In order to facilitate comparison, we ensured that all parameters and pre-processing used by \mireval{} were equivalent to the reference system unless otherwise explicitly noted.
 Then, for each reported score, we computed the relative change between the scores as their absolute difference divided by their mean, or
 $$
 \frac{|s_m - s_c|}{(s_m + s_c)/2}
 $$
 where $s_m$ is the score reported by \mireval{} and $s_c$ is the score being compared to.
-We then computed the average relative change across all examples in the obtained dataset for each score.
+Finally, we computed the average relative change across all examples in the obtained dataset for each score.
 
 For the beat detection, chord estimation, structural segmentation, and onset detection tasks, MIREX releases the the output of submitted algorithms, the ground truth annotations, and the reported score for each example in each data set.
 We therefore can directly compare \mireval{} to MIREX for these tasks by collecting all reference and estimated annotations, computing each metric for each example using identical pre-processing and parameters as appropriate, and comparing the result to the score reported by MIREX.
 We chose to compare against the results reported in MIREX 2013 for all tasks.
 
-In contrast to the tasks above, MIREX does not release ground truth annotations or algorithm output for the melody extraction and pattern discovery tasks.
+In contrast to the tasks listed above, MIREX does not release ground truth annotations or algorithm output for the melody extraction and pattern discovery tasks.
 As a result, we compared \mireval{}'s output on smaller development datasets for these tasks.
 For melody extraction, the ADC2004 dataset used by MIREX is publicly available.
 We performed melody extraction using the ``SG2'' algorithm evaluated in 2011 \cite{salamon:MelodyExraction:TASLP:12} and compared \mireval{}'s reported scores to those of MIREX.
@@ -314,7 +312,7 @@ When computing the structure annotation metrics (Pairwise Precision, Recall, and
 In MIREX, a fixed sampling grid is used for the Rand Index and pairwise classification metrics, but a different sampling rate is used for each, while a fixed number of samples is used for the conditional entropy scores.
 In \mireval{}, the same fixed sampling rate of 100 milliseconds is used for all structure annotation metrics, as specified in \cite{willis2013mirex}.
 
-Furthermore, the start and end time over which the intervals are sampled depends on both the reference and estimated intervals while \mireval{} always samples with respect to the reference to ensure fair comparison across multiple estimates.
+Furthermore, in MIREX the start and end time over which the intervals are sampled depends on both the reference and estimated intervals while \mireval{} always samples with respect to the reference to ensure fair comparison across multiple estimates.
 This additionally requires that estimated intervals are adjusted to span the exact duration specified by the reference intervals.
 This is done by adding synthetic intervals when the estimated intervals do not span the reference intervals or otherwise trimming estimated intervals.
 These differences account for the average relative changes for the structure annotation metrics.
@@ -324,7 +322,7 @@ These differences account for the average relative changes for the structure ann
 When adding intervals to the estimated annotation as described above, \mireval{} ensures that the labels do not conflict with existing labels.
 This has the effect of changing the normalization constant in the Normalized Conditional Entropy scores.
 Furthermore, when there's only one label, the Normalized Conditional Entropy scores are not well defined.
-MIREX assigns a score of 1 in this case; in \mireval{} we assign a score of 0.
+MIREX assigns a score of 1 in this case; \mireval{} assigns a score of 0.
 This results in a larger average change for these two metrics.
 
 \subsection{Melody Voicing False Alarm Rate}
@@ -350,7 +348,7 @@ This chord alone causes an observable difference between \mireval{} and MIREX's 
 \label{sec:discussion}
 
 The results in Section \ref{sec:comparison} clearly demonstrate that differences in implementation can lead to substantial differences in reported scores.
-This underlines the need for transparency and community involvement in comparative evaluation.
+This corroborates the need for transparency and community involvement in comparative evaluation.
 The primary motivation behind developing \mireval{} is to establish an open-source, publicly refined implementation of the most common MIR metrics.
 By encouraging MIR researchers to use the same easily understandable evaluation codebase, we can ensure that different systems are being compared fairly.
 
