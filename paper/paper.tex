@@ -72,7 +72,7 @@ Unfortunately, this comparison can be confounded by small details of the impleme
 For the past 10 years, the yearly Music Information Retrieval Evaluation eXchange (MIREX) has been a forum for comparing MIR algorithms over common datasets \cite{downie2008music}.
 By providing a standardized shared-task setting, MIREX has become critically useful to track progress in MIR research.
 MIREX is built upon the Networked Environment for Music Analysis (NEMA) \cite{west2010networked}, a large-scale system which includes exhaustive functionality for evaluating, summarizing, and displaying evaluation results.
-The NEMA codebase includes multiple programming languages and dependencies (some of which, e.g. Matlab, are proprietary) so compiling and running it at individual sites is nontrivial. 
+The NEMA codebase includes multiple programming languages and dependencies (some of which, \eg{} Matlab, are proprietary) so compiling and running it at individual sites is nontrivial. 
 %
 %Due to its scale, characteristics, and intended use, 
 In consequence, the NEMA system is rarely used for evaluating MIR algorithms outside of the setting of MIREX \cite{downie2008music}.
@@ -95,7 +95,7 @@ Finally, we discuss and summarize our contributions in Section \ref{sec:discussi
 Each task is given its own submodule, and each metric is defined as a separate function in each submodule.
 Each task submodule also includes common data pre-processing steps for the task.
 Every metric function includes detailed documentation, example usage, input validation, and references to the original paper which defined the metric.
-\mireval{} also includes a submodule \texttt{io} which provides convenience functions for loading in task-specific data from common file formats.
+\mireval{} also includes a submodule \texttt{io} which provides convenience functions for loading in task-specific data from common file formats (\eg{} comma/tab separated values, \texttt{.lab} files \cite{harte2010towards}, \etc{}).
 For readability, all code follows the PEP8 style guide\cite{van2001pep}.
 \mireval{}'s only dependencies outside of the Python standard library are the free and open-source SciPy/Numpy\cite{jones2001scipy} and scikit-learn\cite{pedregosa2011scikit} Python libraries.
 
@@ -106,6 +106,9 @@ They are also distributed as executables for Windows and Mac OS X, so that \mire
 
 \section{Tasks included in \mireval{}}
 \label{sec:tasks}
+
+In this section, we enumerate the tasks and metrics implemented in \mireval{}.
+Due to space constraints, we only give high-level descriptions for each metric; for exact definitions see the references provided.
 
 \subsection{Beat Detection}
 
@@ -143,7 +146,7 @@ The cumulative score, referred to as \emph{weighted chord symbol recall}, is tal
  
 \subsection{Pattern Discovery}
 
-Pattern discovery involves the identification of musical patterns (i.e. short fragments or melodic ideas that repeat at least twice) both from audio and symbolic representations.
+Pattern discovery involves the identification of musical patterns (\ie{} short fragments or melodic ideas that repeat at least twice) both from audio and symbolic representations.
 The metrics used to evaluation pattern discovery systems attempt to quantify the ability of the algorithm to not only determine the present patterns in a piece, but also to find all of their occurrences.
 Given the novelty of this task (the first year it appeared in MIREX was 2013), the evaluation metrics are likely to be modified in further editions.
 
@@ -177,7 +180,7 @@ Melody annotations are represented as time series of fundamental frequency ($f_0
 An estimated pitch series is evaluated against a reference by computing the following five measures defined in \cite{salamon:MelodyReview:IEEESPM13}, first used in the MIREX 2005 Automatic Melody Extraction evaluation \cite{polinerMelodyEval}:
 \textbf{Voicing Recall Rate} which computes the proportion of frames labeled as melody frames in the reference that are estimated as melody frames by the algorithm;
 \textbf{Voicing False Alarm Rate} which computes the proportion of frames labeled as non-melody in the reference that are mistakenly estimated as melody frames by the algorithm;
-\textbf{Raw Pitch Accuracy} which computes the proportion of melody frames in the reference for which the frequency is considered correct (i.e.~within half a semitone of the reference frequency);
+\textbf{Raw Pitch Accuracy} which computes the proportion of melody frames in the reference for which the frequency is considered correct (\ie{} within half a semitone of the reference frequency);
 \textbf{Raw Chroma Accuracy} where the estimated and reference $f_0$ sequences are mapped onto a single octave before computing the raw pitch accuracy;
 and the \textbf{Overall Accuracy}, which computes the proportion of all frames correctly estimated by the algorithm, including whether non-melody frames where labeled by the algorithm as non-melody.
 Prior to computing these metrics, both the estimate and reference sequences must be sampled on the same timebase.
@@ -204,7 +207,7 @@ where $s_m$ is the score reported by \mireval{} and $s_c$ is the score being com
 We then computed the average relative change across all examples in the obtained dataset for each score.
 
 For the beat detection, chord estimation, structural segmentation, and onset detection tasks, MIREX releases the the output of submitted algorithms, the ground truth annotations, and the reported score for each example in each data set.
-We therefore can directly compare \mireval{} to MIREX for these tasks by collecting all reference and estimated annotations, computing each metric for each example, and comparing the result to the score reported by MIREX.
+We therefore can directly compare \mireval{} to MIREX for these tasks by collecting all reference and estimated annotations, computing each metric for each example using identical pre-processing and parameters as appropriate, and comparing the result to the score reported by MIREX.
 We chose to compare against the results reported in MIREX 2013 for all tasks.
 
 In contrast to the tasks above, MIREX does not release ground truth annotations or algorithm output for the melody extraction and pattern discovery tasks.
@@ -334,7 +337,7 @@ This discrepancy caused a large inflation of the average relative change reporte
 \subsection{Weighted Chord Symbol Recall}
 The non-negligible average relative changes seen in the chord metrics are caused by two main sources of ambiguity.
 %Some interval mappings aren't well-defined.
-First, we find some chord labels in the MIREX reference annotations lack well-defined, i.e. singular, mappings into a comparison space. 
+First, we find some chord labels in the MIREX reference annotations lack well-defined, \ie{} singular, mappings into a comparison space. 
 One such example is \texttt{D:maj(*1)/\#1}.
 While the quality shorthand indicates ``major'', the asterisk implies the root is omitted and thus it is unclear whether \texttt{D:maj(*1)/\#1} is equivalent to \texttt{D:maj1}.
 %Some chords get dropped in different scenarios, and we can't replicate the logic. 
@@ -351,8 +354,8 @@ This underlines the need for transparency and community involvement in comparati
 The primary motivation behind developing \mireval{} is to establish an open-source, publicly refined implementation of the most common MIR metrics.
 By encouraging MIR researchers to use the same easily understandable evaluation codebase, we can ensure that different systems are being compared fairly.
 
-While we have given thorough consideration to the design choices made in \mireval{}, we recognize that standards may change over time and that new metrics may be proposed.
-Towards this end, \mireval{} is hosted on Github,\footnote{URL redacted} which provides a straightforward way of proposing changes to the codebase using the Pull Request feature.
+While we have given thorough consideration to the design choices made in \mireval{}, we recognize that standards change over time, new metrics are proposed each year, and that only a subset of MIR tasks are currently implemented in \mireval{}.
+Towards this end, \mireval{} is hosted on Github,\footnote{URL redacted} which provides a straightforward way of proposing changes and additions to the codebase using the Pull Request feature.
 With active community participation, we believe that \mireval{} can ensure that MIR research converges on a standard methodology for evaluation.
 
 \section{Acknowledgements}
