@@ -81,9 +81,9 @@ For the past 10 years, the yearly Music Information Retrieval Evaluation eXchang
 (MIREX) has been a forum for comparing MIR algorithms over common datasets~\cite{downie2008music}.
 By providing a standardized shared-task setting, MIREX has become critically useful for tracking progress in MIR research.
 MIREX is built upon the Networked Environment for Music Analysis (NEMA)~\cite{west2010networked}, a large-scale system which includes exhaustive functionality for evaluating, summarizing, and displaying evaluation results.
-The NEMA code-base includes multiple programming languages and dependencies (some of which, \eg{} Matlab, are proprietary) so compiling and running it at individual sites is nontrivial. 
+The NEMA codebase includes multiple programming languages and dependencies (some of which, \eg{} Matlab, are proprietary) so compiling and running it at individual sites is nontrivial.
 %
-%Due to its scale, characteristics, and intended use, 
+%Due to its scale, characteristics, and intended use,
 In consequence, the NEMA system is rarely used for evaluating MIR algorithms outside of
 the setting of MIREX~\cite{downie2008music}.
 Instead, researchers often create their own implementations of common metrics for evaluating their algorithms.
@@ -214,7 +214,7 @@ five measures defined in~\cite{salamon:MelodyReview:IEEESPM13}, first used in MI
 \textbf{Raw Pitch Accuracy} which computes the proportion of melody frames in the reference for which the frequency is considered correct (\ie{} within half a semitone of the reference frequency);
 \textbf{Raw Chroma Accuracy} where the estimated and reference $f_0$ sequences are mapped onto a single octave before computing the raw pitch accuracy;
 and the \textbf{Overall Accuracy}, which computes the proportion of all frames correctly estimated by the algorithm, including whether non-melody frames where labeled by the algorithm as non-melody.
-Prior to computing these metrics, both the estimate and reference sequences must be sampled onto the same time-base.
+Prior to computing these metrics, both the estimate and reference sequences must be sampled onto the same time base.
 
 \subsection{Onset Detection}
 
@@ -346,7 +346,7 @@ This accounts for the discrepancy in the reference-to-estimated and estimated-to
 
 \subsection{Interval Sampling for Structure Metrics}
 
-When computing the structure annotation metrics (Pairwise Precision, Recall, and F-measure, Rand Index, and Normalized Conditional Entropy Over- and Under-Segmentation Scores), the reference and estimated labels must be sampled to a common time-base.
+When computing the structure annotation metrics (Pairwise Precision, Recall, and F-measure, Rand Index, and Normalized Conditional Entropy Over- and Under-Segmentation Scores), the reference and estimated labels must be sampled to a common time base.
 In MIREX, a fixed sampling grid is used for the Rand Index and pairwise classification metrics, but a different sampling rate is used for each, while a fixed number of samples is used for the conditional entropy scores.
 In \mireval{}, the same fixed sampling rate of 100 milliseconds is used for all
 structure annotation metrics, as specified in~\cite{willis2013mirex}.
@@ -391,10 +391,10 @@ This chord alone causes an observable difference between \mireval{} and MIREX's 
 The results in Section~\ref{sec:comparison} clearly demonstrate that differences in implementation can lead to substantial differences in reported scores.
 This corroborates the need for transparency and community involvement in comparative evaluation.
 The primary motivation behind developing \mireval{} is to establish an open-source, publicly refined implementation of the most common MIR metrics.
-By encouraging MIR researchers to use the same easily understandable evaluation code-base, we can ensure that different systems are being compared fairly.
+By encouraging MIR researchers to use the same easily understandable evaluation codebase, we can ensure that different systems are being compared fairly.
 
 While we have given thorough consideration to the design choices made in \mireval{}, we recognize that standards change over time, new metrics are proposed each year, and that only a subset of MIR tasks are currently implemented in \mireval{}.
-Towards this end, \mireval{} is hosted on Github,\footnote{\url{http://github.com/craffel/mir_eval}} which provides a straightforward way of proposing changes and additions to the code-base using the Pull Request feature.
+Towards this end, \mireval{} is hosted on Github,\footnote{\url{http://github.com/craffel/mir_eval}} which provides a straightforward way of proposing changes and additions to the codebase using the Pull Request feature.
 With active community participation, we believe that \mireval{} can ensure that MIR research converges on a standard methodology for evaluation.
 
 \section{Acknowledgements}
