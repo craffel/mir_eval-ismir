@@ -182,10 +182,10 @@ The metrics used to evaluation pattern discovery systems attempt to quantify the
 
 Collins compiled all previously existent metrics and proposed novel ones~\cite{Collins2013} which resulted in 19 different scores, each one implemented in \mireval{}:
 \textbf{Standard F-measure, Precision, and Recall}, where an estimated prototype pattern is considered correct only if it matches (up to translation) a reference prototype pattern;
-\textbf{Establishment F-measure, Precision, and Recall}, which computes the number of reference patterns that were successfully found, no matter how many occurrences were found;
-\textbf{Occurrence F-measure, Precision, and Recall}, which measures whether an algorithm is able to retrieve all occurrences of a pattern;
+\textbf{Establishment F-measure, Precision, and Recall}, which compute the number of reference patterns that were successfully found, no matter how many occurrences were found;
+\textbf{Occurrence F-measure, Precision, and Recall}, which measure whether an algorithm is able to retrieve all occurrences of a pattern;
 \textbf{Three-layer F-measure, Precision, and Recall}, which capture both the establishment of the patterns and the occurrence retrieval in a single set of scores;
-and the \textbf{First $N$ patterns metrics}, which computes the target proportion establishment recall and three-layer precision for the first $N$ patterns only in order to measure the ability of the algorithm to sort the identified patterns based on their relevance. 
+and the \textbf{First $N$ patterns metrics}, which compute the target proportion establishment recall and three-layer precision for the first $N$ patterns only in order to measure the ability of the algorithm to sort the identified patterns based on their relevance. 
 
 \subsection{Structural Segmentation}
 
@@ -341,7 +341,7 @@ This is not done in MIREX (which uses the Beat Evaluation Toolbox~\cite{davies20
 
 \subsection{Information Gain}
 
-The Information Gain metric~\cite{davies2009evaluation} involves the computation a histogram of the per-beat errors.
+The Information Gain metric~\cite{davies2009evaluation} involves the computation of a histogram of the per-beat errors.
 The Beat Evaluation Toolbox (and therefore MIREX) uses a non-uniform histogram binning where the first, second and last bins are smaller than the rest of the bins while \mireval{} uses a standard uniformly-binned histogram.
 As a result, the Information Gain score reported by \mireval{} differs substantially from that reported by MIREX.
 
