@@ -45,12 +45,12 @@
 {Colin Raffel, Brian McFee, Eric J. Humphrey, Justin Salamon, Oriol Nieto, Dawen Liang,\\[.2em] and Daniel P. W. Ellis\\[.2em]}
 {\includegraphics[height=6em]{marl-logo.pdf}}
 
-\begin{posterbox}[column=0]{Abstract}
+\begin{posterbox}[name=abstract,column=0]{Abstract}
 We present \mireval{}, an open source software library which provides a transparent and easy-to-use implementation of the most common metrics used to measure the performance of MIR algorithms.
 We performed a quantitative comparison of \mireval{} to existing evaluation systems to explore differences in implementation.
 \end{posterbox}
 
-\begin{posterbox}[column=0,below=auto]{Design}
+\begin{posterbox}[name=design,column=0,below=abstract]{Design}
 
 \mireval{} is a Python library which currently includes metrics for the following tasks: \textbf{Beat detection, chord estimation, pattern discovery, structural segmentation, melody extraction}, and \textbf{onset detection}.
 Each task is given its own submodule, and each metric is defined as a separate function in each submodule.
@@ -63,7 +63,7 @@ The evaluators allow for \mireval{} to be called directly from the command line 
 
 \end{posterbox}
 
-\begin{posterbox}[column=1]{Comparison to Existing Implementations}
+\begin{posterbox}[name=comparison,column=1]{Comparison to Existing Implementations}
 
 
 In order to validate the design choices made in \mireval{}, we compared the scores it produces to those reported by the evaluation systems used in MIREX.
@@ -92,7 +92,7 @@ Pattern Discovery & 4 & 5 & 20 \\
 
 \end{posterbox}
 
-\begin{posterbox}[column=0,below=auto,span=2]{Average Relative Difference of \mireval{} vs. MIREX}
+\begin{posterbox}[name=average,column=0,below=design,span=2]{Average Relative Difference of \mireval{} vs. MIREX}
 
 \begin{center}
 \begin{tabularx}{.95\linewidth}{*{9}{>{\centering\arraybackslash}X}}
@@ -130,34 +130,57 @@ F-measure  & Cemgil     & Goto       &  P-score   & CMLc       & CMLt       & AM
 
 \end{posterbox}
 
-\begin{posterbox}[column=0,below=auto,span=2,boxColorOne=white]{}
+\begin{posterbox}[name=python,column=0,below=average]{Using \mireval{} in Python}
 
-\begin{minted}[bgcolor=mintedbg, frame=single, framerule=0pt, fontsize=\large]{python}
+\begin{minted}[bgcolor=boxcolor, frame=single, framerule=0pt]{python}
 import mir_eval
 # Load in beat annotations
-reference_beats = mir_eval.io.load_events('reference_beats.txt')
-estimated_beats = mir_eval.io.load_events('estimated_beats.txt')
-# scores will be a dictionary where the key is the metric name and the value is the score achieved
+reference_beats = mir_eval.io.load_events('ref_beats.txt')
+estimated_beats = mir_eval.io.load_events('est_beats.txt')
+# scores will be a dictionary where the key is the metric name
+# and the value is the score achieved
 scores = mir_eval.beat.evaluate(reference_beats, estimated_beats)
 # evaluate() will pass keyword args to the metric functions
-scores = mir_eval.beat.evaluate(reference_beats, estimated_beats, f_measure_threshold=0.05)
-# You can also perform pre-processing and compute each metric manually
+scores = mir_eval.beat.evaluate(reference_beats, estimated_beats,
+                                f_measure_threshold=0.05,
+                                cemgil_sigma=0.02)
+# You can also perform pre-processing and compute metrics manually
 reference_beats = mir_eval.beat.trim_beats(reference_beats)
 estimated_beats = mir_eval.beat.trim_beats(estimated_beats)
-f_score = mir_eval.beat.f_measure(reference_beats, estimated_beats, f_measure_threshold=0.05)
+f_meas = mir_eval.beat.f_measure(reference_beats, estimated_beats,
+                                 f_measure_threshold=0.05)
+cemgil = mir_eval.beat.cemgil(reference_beats, estimated_beats,
+                              cemgil_sigma=0.02)
 \end{minted}
 
-$\;$\\[-1em]
+\end{posterbox}
 
-\begin{minted}[bgcolor=mintedbg, frame=single, framerule=0pt, fontsize=\large]{c}
-> ./onset_eval.py reference_onsets.txt estimated_onsets.txt -o output.json
-reference_onsets.txt vs. estimated_onsets.txt
-  F-measure : 0.531
-  Precision : 0.481
-     Recall : 0.591
-Saving results to:  output.json
+\begin{posterbox}[name=evaluator,column=1,below=average]{Using the evaluator scripts}
+
+\begin{minted}[bgcolor=boxcolor, frame=single, framerule=0pt]{bash}
+> ./onset_eval.py ref_beats.txt est_beats.txt -o scores.json
+
+  ref_beats.txt vs. est_beats.txt
+                          F-measure : 0.622
+                             Cemgil : 0.362676699474
+           Cemgil Best Metric Level : 0.362676699474
+                               Goto : 0.000
+                            P-score : 0.828185328185
+    Correct Metric Level Continuous : 0.0328185328185
+         Correct Metric Level Total : 0.65444015444
+        Any Metric Level Continuous : 0.0328185328185
+             Any Metric Level Total : 0.65444015444
+                   Information gain : 0.20492902479
+  Saving results to:  scores.json
+
+> cat scores.json
+
+  {"F-measure": 0.6216216216216, "Cemgil": 0.36267669947376, ...
 \end{minted}
 
+\end{posterbox}
+
+\begin{posterbox}[name=url,column=0,below=python,span=2,boxColorOne=white]{}
 
 \centering\huge
 \texttt{http://www.github.com/craffel/mir\_eval}
