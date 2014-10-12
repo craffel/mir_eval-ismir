@@ -1,0 +1,169 @@
+\documentclass[paperwidth=120cm,paperheight=150cm,portrait,fontscale=.22,margin=5cm,lmargin=.2cm,rmargin=.2cm]{baposter}
+
+\usepackage{minted}
+\definecolor{mintedbg}{rgb}{0.95,0.95,0.95}
+
+\usepackage{upquote}
+\AtBeginDocument{%
+\def\PYZsq{\textquotesingle}%
+}
+
+\definecolor{bordercol}{RGB}{40,40,40}
+\definecolor{headercol1}{RGB}{235,218,229}
+\definecolor{headercol2}{RGB}{80,80,80}
+\definecolor{headerfontcol}{RGB}{0,0,0}
+\definecolor{boxcolor}{RGB}{255,235,205}
+
+\renewcommand{\familydefault}{\sfdefault}
+
+\def\mireval{\texttt{mir\char`_eval}}
+
+\usepackage{tabularx}
+\usepackage{booktabs}
+
+\begin{document}
+
+\begin{poster}{
+  background=plain,
+  bgColorOne=white,
+  headerheight=0.1\textheight,
+  eyecatcher=true,
+  columns=2,
+  borderColor=bordercol,
+  headerColorOne=headercol1,
+  headerColorTwo=headercol1,
+  headerFontColor=headerfontcol,
+  headerfont=\textmd,
+  boxColorOne=boxcolor,
+  linewidth=0.5pt,
+  borderColor=black,
+  headerborder=none,
+  textborder=none,
+}
+{\includegraphics[height=8em]{labrosa-new-nobg.pdf}}
+{\textmd{MIR\char`_EVAL:$\;$A$\;$TRANPARENT$\;$IMPLEMENTATION\\OF$\;$COMMON$\;$MIR$\;$METRICS}}
+{Colin Raffel, Brian McFee, Eric J. Humphrey, Justin Salamon, Oriol Nieto, Dawen Liang,\\[.2em] and Daniel P. W. Ellis\\[.2em]}
+{\includegraphics[height=6em]{marl-logo.pdf}}
+
+\begin{posterbox}[column=0]{Abstract}
+We present \mireval{}, an open source software library which provides a transparent and easy-to-use implementation of the most common metrics used to measure the performance of MIR algorithms.
+We performed a quantitative comparison of \mireval{} to existing evaluation systems to explore differences in implementation.
+\end{posterbox}
+
+\begin{posterbox}[column=0,below=auto]{Design}
+
+\mireval{} is a Python library which currently includes metrics for the following tasks: \textbf{Beat detection, chord estimation, pattern discovery, structural segmentation, melody extraction}, and \textbf{onset detection}.
+Each task is given its own submodule, and each metric is defined as a separate function in each submodule.
+Each task submodule also includes common data pre-processing steps for the task.
+Every metric function includes detailed documentation, example usage, input validation, and references to the original paper which defined the metric.
+\mireval{} also includes a submodule \texttt{io} which provides convenience functions for loading in task-specific data from common file formats.
+In order to simplify the usage of \mireval{}, it is packaged with a set of ``evaluator'' scripts, one for each task.
+These scripts include all code necessary to load in data, pre-process it, and compute all metrics for a given task.
+The evaluators allow for \mireval{} to be called directly from the command line so that no knowledge of Python is necessary.
+
+\end{posterbox}
+
+\begin{posterbox}[column=1]{Comparison to Existing Implementations}
+
+
+In order to validate the design choices made in \mireval{}, we compared the scores it produces to those reported by the evaluation systems used in MIREX.
+Beyond pinpointing intentional differences in implementation, this process can also help find and fix bugs in either \mireval{} or the system it is being compared to.
+For each task covered by \mireval{}, we obtained a collection of reference and estimated annotations and computed or obtained a score for each metric using \mireval{} and the evaluation system being compared to.
+Then, for each reported score, we computed the relative change between the scores as their absolute difference divided by their mean.
+Finally, we computed the average relative change across all examples in the obtained dataset for each score.
+The number of algorithms, examples, and total number of scores for all tasks are summarized in the following table.
+
+\begin{center}
+\begin{tabular}{l r r r}
+\toprule
+Task & Algorithms & Examples & Scores\\
+\midrule
+Beat Detection & 20 & 679 & 13580\\
+Segmentation & 8 & 1397 & 11176 \\
+Onset Detection & 11 & 85 & 935 \\
+Chord Estimation & 12 & 217 & 2604 \\
+Melody & 1 & 20 & 20 \\
+Pattern Discovery & 4 & 5 & 20 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\vspace{-2.5mm}
+
+\end{posterbox}
+
+\begin{posterbox}[column=0,below=auto,span=2]{Average Relative Difference of \mireval{} vs. MIREX}
+
+\begin{center}
+\begin{tabularx}{.95\linewidth}{*{9}{>{\centering\arraybackslash}X}}
+%\toprule
+ \multicolumn{9}{ c }{\textbf{Beat Detection}} \\
+  \cmidrule(lr){1-9}
+F-measure  & Cemgil     & Goto       &  P-score   & CMLc       & CMLt       & AMLc       & AMLt       & In. Gain   \\
+   0.703\% &    0.035\% &    0.054\% &    0.877\% &    0.161\% &    0.143\% &    0.137\% &    0.139\% &    9.174\% \\
+  \midrule
+\end{tabularx}
+\begin{tabularx}{.95\linewidth}{*{9}{>{\centering\arraybackslash}X}}
+ \multicolumn{9}{ c }{\textbf{Structural Segmentation}} \\
+  \cmidrule(lr){1-9}
+  NCE-Over   & NCE-under  & Pairwise F & Pairwise P & Pairwise R & Rand       & F@.5       & P@.5       & R@.5  \\
+3.182\% &   11.082\% &    0.937\% &    0.942\% &    0.785\% &    0.291\% &    0.429\% &    0.088\% &    1.021\%  \\
+  \midrule
+\end{tabularx}
+\begin{tabularx}{.95\linewidth}{*{8}{>{\centering\arraybackslash}X}}
+ \multicolumn{5}{ c }{\textbf{Structural Segmentation (continued)}} & \multicolumn{3}{ c }{\textbf{Onset Detection}}\\
+  \cmidrule(lr){1-5}
+  \cmidrule(lr){6-8}
+  F@3 &   P@3        & R@3 & Ref-est dev. & Est-ref dev. & F-measure  & Precision  & Recall     \\
+ 0.393\%  & 0.094\% &    0.954\% & 0.935\% &    0.000\% &  0.165\% &    0.165\% &    0.165\% \\
+  \midrule
+\end{tabularx}
+\begin{tabularx}{.95\linewidth}{*{2}{>{\centering\arraybackslash}X} c *{1}{>{\centering\arraybackslash}X} c *{1}{>{\centering\arraybackslash}X} c *{1}{>{\centering\arraybackslash}X} c c}
+ \multicolumn{5}{ c }{\textbf{Chord Estimation}} & \multicolumn{5}{ c }{\textbf{Melody Extraction}}\\
+  \cmidrule(lr){1-5}
+  \cmidrule(lr){6-10}
+  Root       & Maj/min       & Maj/min + Inv & 7ths & 7ths + Inv & Overall & Raw pitch & Chroma & Voicing R & Voicing FA \\
+ 0.007\% & 0.163\% & 1.005\% & 0.483\% & 0.899\% & 0.070\% &    0.087\% &    0.114\% &    0.000\% &   10.095\% \\
+%\bottomrule
+\end{tabularx}
+\end{center}
+
+\end{posterbox}
+
+\begin{posterbox}[column=0,below=auto,span=2,boxColorOne=white]{}
+
+\begin{minted}[bgcolor=mintedbg, frame=single, framerule=0pt, fontsize=\large]{python}
+import mir_eval
+# Load in beat annotations
+reference_beats = mir_eval.io.load_events('reference_beats.txt')
+estimated_beats = mir_eval.io.load_events('estimated_beats.txt')
+# scores will be a dictionary where the key is the metric name and the value is the score achieved
+scores = mir_eval.beat.evaluate(reference_beats, estimated_beats)
+# evaluate() will pass keyword args to the metric functions
+scores = mir_eval.beat.evaluate(reference_beats, estimated_beats, f_measure_threshold=0.05)
+# You can also perform pre-processing and compute each metric manually
+reference_beats = mir_eval.beat.trim_beats(reference_beats)
+estimated_beats = mir_eval.beat.trim_beats(estimated_beats)
+f_score = mir_eval.beat.f_measure(reference_beats, estimated_beats, f_measure_threshold=0.05)
+\end{minted}
+
+$\;$\\[-1em]
+
+\begin{minted}[bgcolor=mintedbg, frame=single, framerule=0pt, fontsize=\large]{c}
+> ./onset_eval.py reference_onsets.txt estimated_onsets.txt -o output.json
+reference_onsets.txt vs. estimated_onsets.txt
+  F-measure : 0.531
+  Precision : 0.481
+     Recall : 0.591
+Saving results to:  output.json
+\end{minted}
+
+
+\centering\huge
+\texttt{http://www.github.com/craffel/mir\_eval}
+
+\end{posterbox}
+
+\end{poster}
+
+\end{document}
