@@ -1,0 +1,89 @@
+\documentclass[paperwidth=120cm,paperheight=90cm,portrait,fontscale=.22,margin=5cm,lmargin=.2cm,rmargin=.2cm]{baposter}
+
+\usepackage{minted}
+\definecolor{mintedbg}{rgb}{0.95,0.95,0.95}
+
+\usepackage{upquote}
+\AtBeginDocument{%
+\def\PYZsq{\textquotesingle}%
+}
+
+\definecolor{bordercol}{RGB}{40,40,40}
+\definecolor{headercol1}{RGB}{235,218,229}
+\definecolor{headercol2}{RGB}{80,80,80}
+\definecolor{headerfontcol}{RGB}{0,0,0}
+\definecolor{boxcolor}{RGB}{255,235,205}
+
+\renewcommand{\familydefault}{\sfdefault}
+
+\def\mireval{\texttt{mir\char`_eval}}
+
+\usepackage{tabularx}
+\usepackage{booktabs}
+
+\begin{document}
+
+\begin{poster}{
+  background=plain,
+  bgColorOne=white,
+  headerheight=0.18\textheight,
+  eyecatcher=true,
+  columns=1,
+  borderColor=bordercol,
+  headerColorOne=headercol1,
+  headerColorTwo=headercol1,
+  headerFontColor=headerfontcol,
+  headerfont=\textmd,
+  boxColorOne=white,
+  linewidth=0.5pt,
+  borderColor=black,
+  headerborder=none,
+  textborder=none,
+}
+{\includegraphics[height=8em]{labrosa-new-nobg.pdf}}
+{\textmd{MIR\char`_EVAL:$\;$A$\;$TRANPARENT$\;$IMPLEMENTATION\\OF$\;$COMMON$\;$MIR$\;$METRICS}}
+{Colin Raffel, Brian McFee, Eric J. Humphrey, Justin Salamon, Oriol Nieto, Dawen Liang,\\[.2em] and Daniel P. W. Ellis\\[.2em]}
+{\includegraphics[height=6em]{marl-logo.pdf}}
+
+\begin{posterbox}[]{}
+\Huge
+\mireval{} is a Python module which includes metrics for the following tasks: \textbf{Beat detection, chord estimation, pattern discovery, structural segmentation, melody extraction}, and \textbf{onset detection}.
+It's easy to use in Python:
+\end{posterbox}
+
+\begin{posterbox}[below=auto]{}
+
+\begin{minted}[bgcolor=boxcolor, frame=single, framerule=0pt, fontsize=\Large]{python}
+import mir_eval
+# Load in beat annotations
+reference_beats = mir_eval.io.load_events('ref_beats.txt')
+estimated_beats = mir_eval.io.load_events('est_beats.txt')
+# scores will be a dictionary where the key is the metric name and the value is the score achieved
+scores = mir_eval.beat.evaluate(reference_beats, estimated_beats)
+\end{minted}
+
+\end{posterbox}
+
+\begin{posterbox}[below=auto]{}
+\Huge
+or without Python, using the included evaluator scripts:
+\end{posterbox}
+
+\begin{posterbox}[name=evaluator,below=auto]{}
+
+\begin{minted}[bgcolor=boxcolor, frame=single, framerule=0pt, fontsize=\Large]{bash}
+> ./beat_eval.py ref_beats.txt est_beats.txt -o scores.json
+> cat scores.json
+  {"F-measure": 0.6216216216216, "Cemgil": 0.36267669947376, "Cemgil Best Metric Level": ...
+\end{minted}
+
+\end{posterbox}
+
+\begin{posterbox}[below=auto]{}
+\Huge
+We also quantitatively compared it to MIREX with some intriguing results!
+\end{posterbox}
+
+\end{poster}
+
+\end{document}
