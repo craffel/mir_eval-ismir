@@ -14,7 +14,6 @@ import os
 import csv
 import mir_eval
 import sys
-sys.path.append('../')
 import convert_json_instants_to_lab
 import shutil
 import joblib
@@ -23,7 +22,7 @@ import numpy as np
 
 # <codecell>
 
-BASE_DATA_PATH = '../../data/beat/'
+BASE_DATA_PATH = '../data/beat/'
 METRIC_KEYS = ['F-Measure', 'Cemgil', 'Goto', 'McKinney P-score', 'CMLc', 'CMLt', 'AMLc', 'AMLt', 'D (bits)']
 ALG_NAMES = ['FW4', 'ZDBG1', 'FW2', 'FW1', 'KFRO1', 'ZDG1', 'ZDG2', 'CDF2', 'CDF1', 'GP3',
              'DP1', 'SB6', 'GP1', 'GKC3', 'SB5', 'GP2', 'ES3', 'ES1', 'EWFS1', 'FK1']

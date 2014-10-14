@@ -6,8 +6,6 @@
 import urllib
 import glob
 import os
-import sys
-sys.path.append('../')
 import convert_json_instants_to_lab
 import shutil
 import csv
@@ -16,7 +14,7 @@ import numpy as np
 
 # <codecell>
 
-BASE_DATA_PATH = '../../data/onset/'
+BASE_DATA_PATH = '../data/onset/'
 
 METRIC_KEYS = ['Average F-Measure', 'Average precision', 'Average recall']
 ALG_NAMES = ['CB1','CF4','CSF1','FMEGS1','FMESS1','MTB1','SB1','SB2','SB3','SB4','ZHZD1']

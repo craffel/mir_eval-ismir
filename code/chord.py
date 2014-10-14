@@ -7,18 +7,12 @@ import glob
 import os
 import csv
 import mir_eval
-import sys
 import numpy as np
-sys.path.append('../')
-import convert_json_labels_to_lab
-import shutil
-import joblib
-import urllib
 import collections
 
 # <codecell>
 
-BASE_DATA_PATH = '../../data/chord/'
+BASE_DATA_PATH = '../data/chord/'
 # What MIREX calls the vocabs
 MIREX_VOCABS = ["resultsMirexRoot", "resultsMirexMajMin", "resultsMirexMajMinBass",
                 "resultsMirexSevenths", "resultsMirexSeventhsBass"]

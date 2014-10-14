@@ -6,13 +6,12 @@
 import glob
 import os
 import sys
-import shutil
 import mir_eval
 import numpy as np
 
 # <codecell>
 
-BASE_DATA_PATH = '../../data/pattern/'
+BASE_DATA_PATH = '../data/pattern/'
 METRIC_KEYS = ['P_est', 'R_est', 'F1_est', 'P_occ(c=.75)', 'R_occ(c=.75)', 'F_1occ(c=.75)', 'P_3', 'R_3',
                'TLF_1', 'FFTP_est', 'FFP', 'P_occ(c=.5)', 'R_occ(c=.5)', 'F_1occ(c=.5)', 'P', 'R', 'F_1']
 

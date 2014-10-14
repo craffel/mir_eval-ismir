@@ -6,14 +6,13 @@
 import urllib
 import glob
 import os
-import shutil
 import csv
 import mir_eval
 import numpy as np
 
 # <codecell>
 
-BASE_DATA_PATH = '../../data/melody'
+BASE_DATA_PATH = '../data/melody'
 METRIC_KEYS = ['Overall Accuracy', 'Raw Pitch Accuracy', 'Raw Chroma Accuracy', 'Voicing Recall Rate', 'Voicing False-Alarm Rate']
 ALG_NAMES = ['SG2']
 

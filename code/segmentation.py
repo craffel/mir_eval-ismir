@@ -13,9 +13,7 @@ import glob
 import os
 import csv
 import mir_eval
-import sys
 import numpy as np
-sys.path.append('../')
 import convert_json_labels_to_lab
 import shutil
 import joblib
@@ -23,7 +21,7 @@ import urllib
 
 # <codecell>
 
-BASE_DATA_PATH = '../../data/segment/'
+BASE_DATA_PATH = '../data/segment/'
 METRIC_KEYS = ['Normalised conditional entropy based over-segmentation score',
                'Normalised conditional entropy based under-segmentation score',
                'Frame pair clustering F-measure',
