@@ -1,0 +1,16 @@
+List: "MirexChord2009.lst"
+
+********************
+* Chords MirexRoot *
+********************
+Duration of evaluated symbols: 37054.7 s
+Average score: 75.3228%
+
+Correct chords: 27055.6s (73.0154%)
+Only root correct: 0s (0%)
+Only type correct: 7820.79s (21.1061%)
+All wrong: 9.09495e-13s (2.45447e-15%)
+Deleted chords: 266.186 s (0.718361%)
+
+Correct no-chords: 855.005 s (2.30742%)
+Inserted chords: 1057.06 s (2.85271%)

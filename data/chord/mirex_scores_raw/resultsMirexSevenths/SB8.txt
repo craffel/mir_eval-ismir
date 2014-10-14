@@ -1,0 +1,16 @@
+List: "MirexChord2009.lst"
+
+************************
+* Chords MirexSevenths *
+************************
+Duration of evaluated symbols: 35161.3 s
+Average score: 6.60445%
+
+Correct chords: 1929.27s (5.48691%)
+Only root correct: 939.185s (2.67108%)
+Only type correct: 20170.6s (57.3661%)
+All wrong: 9550.3s (27.1614%)
+Deleted chords: 659.804 s (1.87651%)
+
+Correct no-chords: 392.942 s (1.11754%)
+Inserted chords: 1519.13 s (4.32046%)

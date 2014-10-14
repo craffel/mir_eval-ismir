@@ -1,63 +1,109 @@
-'''
-Compare mir_eval against MIREX 2013 chord results
-'''
+# -*- coding: utf-8 -*-
+# <nbformat>3.0</nbformat>
 
-import json
+# <codecell>
+
+import glob
+import os
+import csv
+import mir_eval
+import sys
 import numpy as np
-from mir_eval import chord
-from os.path import basename
+sys.path.append('../')
+import convert_json_labels_to_lab
+import shutil
+import joblib
+import urllib
+import collections
 
-# Consists of three aligned lists
-#   referece_files
-#   estimation_files
-#   scores
-result_json_file = "./data/mirex_results.json"
-with open(result_json_file) as fp:
-    results = json.load(fp)
+# <codecell>
 
-VOCABS = ['root', 'majmin', 'majmin-inv', 'sevenths', 'sevenths-inv']
-MIREX_VOCABS = [
-    "resultsMirexRoot", "resultsMirexMajMin", "resultsMirexMajMinBass",
-    "resultsMirexSevenths", "resultsMirexSeventhsBass"]
+BASE_DATA_PATH = '../../data/chord/'
+# What MIREX calls the vocabs
+MIREX_VOCABS = ["resultsMirexRoot", "resultsMirexMajMin", "resultsMirexMajMinBass",
+                "resultsMirexSevenths", "resultsMirexSeventhsBass"]
+# What mir_eval calls the vocabs
+VOCABS = ['root', 'majmin', 'majmin_inv', 'sevenths', 'sevenths_inv']
+ALG_NAMES = ['CB3', 'CB4', 'CF2', 'KO1', 'KO2', 'NG1', 'NG2', 'NMSD1', 'NMSD2', 'PP3', 'PP4', 'SB8']
 
+# <codecell>
 
-def filebase(fpath):
-    return basename(fpath).split('.')[0]
+# Convert scores in mirex_scores_raw to the format we want
+# These csv files come from http://music-ir.org/mirex/results/2013/ace/MirexChord2009.zip
+raw_mirex_dir = os.path.join(BASE_DATA_PATH, 'mirex_scores_raw')
+mirex_dir = os.path.join(BASE_DATA_PATH, 'mirex_scores')
+for alg in ALG_NAMES:
+    if not os.path.exists(os.path.join(mirex_dir, alg)):
+        os.makedirs(os.path.join(mirex_dir, alg))
+    name_to_scores = collections.defaultdict(list)
+    for vocab in MIREX_VOCABS:
+        filename = os.path.join(raw_mirex_dir, vocab, alg + '.csv')
+        with open(filename, 'r') as f:
+            # Skip first two lines
+            f.next()
+            f.next()
+            csv_reader = csv.reader(f)
+            for row in csv_reader:
+                name_to_scores[row[0]].append(float(row[1])/100.)
+    for filename, scores in name_to_scores.items():
+        np.savetxt(os.path.join(mirex_dir, alg, filename + '.txt'), scores)
 
+# <codecell>
 
-def get_mir_eval_scores(reference_files, estimation_files):
-    '''Computes all mir_eval metrics and returns them in a list with the order
-    ['root', 'majmin', 'majmin-inv', 'sevenths', 'sevenths-inv'].
-    '''
+def process_one_algorithm(algorithm_directory, skip=False):
+    ''' Computes mir_eval scores for all output files from one algorithm '''
+    reference_dir = os.path.join(BASE_DATA_PATH, 'reference')
+    for estimated_chords_file in glob.glob(os.path.join(BASE_DATA_PATH, 'estimated',
+                                                        algorithm_directory, '*.lab')):
+        est_intervals, est_labels = mir_eval.io.load_labeled_intervals(estimated_chords_file)
+        # Skip scores already computed
+        if skip and os.path.exists(estimated_chords_file.replace('estimated', 'mir_eval_scores')):
+            continue
+        # Metrics are computed as the mean across all reference annotations
+        for N, reference_chords_file in enumerate(glob.glob(os.path.join(reference_dir, '*',
+                                                                         os.path.split(estimated_chords_file)[1]))):
+            ref_intervals, ref_labels = mir_eval.io.load_labeled_intervals(reference_chords_file)
+            scores = mir_eval.chord.evaluate(ref_intervals, ref_labels, est_intervals, est_labels)
+            scores = np.array([scores[vocab] for vocab in VOCABS])
+        # Compute mean
+        scores /= float(N + 1)
+        output_path = os.path.split(estimated_chords_file)[0].replace('estimated', 'mir_eval_scores')
+        # Make sure output dir exists
+        if not os.path.exists(output_path):
+            os.makedirs(output_path)
+        np.savetxt(estimated_chords_file.replace('estimated', 'mir_eval_scores').replace('.lab', '.txt'), scores)
 
-    scores = dict([(k, list()) for k in VOCABS])
+# <codecell>
 
-    for ref, est in zip(reference_files, estimation_files):
-        single_score = chord.evaluate_file_pair(ref, est, VOCABS)
-        for name, score in single_score.items():
-            # Skip weights and errors
-            if name in scores:
-                scores[name].append(score)
+for alg_name in ALG_NAMES:
+    process_one_algorithm(alg_name)
 
-    return [100*np.array(scores[name]) for name in VOCABS]
+# <codecell>
 
-mir_eval_scores = get_mir_eval_scores(results['reference_files'],
-                                      results['estimation_files'])
+mir_eval_scores = []
+mirex_scores = []
+score_glob = glob.glob(os.path.join(BASE_DATA_PATH, 'mir_eval_scores', '*', '*.txt'))
+for mir_eval_score_file in score_glob:
+    mir_eval_scores.append([np.loadtxt(mir_eval_score_file)])
+    mirex_scores.append([np.loadtxt(mir_eval_score_file.replace('mir_eval_scores', 'mirex_scores'))])
+mir_eval_scores = np.vstack(mir_eval_scores)
+mirex_scores = np.vstack(mirex_scores)
 
+# <codecell>
 
-def get_mirex_scores(estimation_files, score_object):
-    vocab_scores = dict([(k, list()) for k in MIREX_VOCABS])
-    for est_file in estimation_files:
-        algo, filename = est_file.split("/")[-2:]
-        track_base = filebase(filename)
-        for task in MIREX_VOCABS:
-            vocab_scores[task].append(score_object[track_base][algo][task])
+np.set_printoptions(precision=10, threshold=10000, linewidth=150, suppress=True)
 
-    return [np.array(vocab_scores[name]) for name in MIREX_VOCABS]
+# <codecell>
 
+score_mean = np.mean(np.dstack([np.round(mirex_scores, 4), np.round(mir_eval_scores, 4)]), axis=-1)
+score_mean = score_mean + (score_mean == 0)
 
-mirex_scores = get_mirex_scores(results['estimation_files'], results['scores'])
+# <codecell>
 
-errors = np.array([np.abs(a - b)
-                   for a, b in zip(mir_eval_scores, mirex_scores)])
+diff = np.round(mirex_scores, 3) - np.round(mir_eval_scores, 3)
+diff[np.less_equal(np.abs(diff), .0010001)] = 0
+print ' & '.join(['{:10s}'.format(key) for key in VOCABS]),
+print '\\\\'
+print ' & '.join(['{:8.3f}\%'.format(score*100) for score in np.mean(np.abs(diff)/score_mean, axis=0)]),
+print '\\\\'
 

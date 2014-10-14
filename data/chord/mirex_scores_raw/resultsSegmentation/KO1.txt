@@ -1,0 +1,8 @@
+List: "MirexChord2009.lst"
+
+**********************
+* Segmentation Inner *
+**********************
+Directional Hamming measure: 0.842158
+Under-segmentation: 0.143412
+Over-segmentation: 0.0875706
