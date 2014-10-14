@@ -43,14 +43,6 @@ with open(os.path.join(BASE_DATA_PATH, 'matlab_scores_raw', 'resultsMATLAB.txt')
 
 # <codecell>
 
-mir_eval.pattern.METRICS.keys()
-
-# <codecell>
-
-help(mir_eval.pattern.first_n_target_proportion_R)
-
-# <codecell>
-
 def get_mir_eval_scores(reference_pattern, estimated_pattern):
     ''' Computes all mir_eval pattern metrics and returns them in the correct order
     '''
@@ -159,10 +151,4 @@ diff[np.less_equal(np.abs(diff), .00010001)] = 0
 relative_change = np.mean(np.abs(diff)/score_mean, axis=0)
 for metric_name, change in zip(METRIC_KEYS, relative_change):
     print metric_name, ':', change*100, '%'
-
-# <codecell>
-
-for filename, d in zip(score_glob, np.round(diff, 3)):
-    print filename
-    print d
 
