@@ -185,7 +185,7 @@ mirex_scores = np.vstack(mirex_scores)
 
 # <codecell>
 
-np.set_printoptions(precision=5, threshold=10000, linewidth=150, suppress=True)
+np.set_printoptions(precision=3, threshold=10000, linewidth=150, suppress=True)
 
 # <codecell>
 
@@ -196,9 +196,8 @@ score_mean = score_mean + (score_mean == 0)
 
 diff = np.round(mirex_scores, 3) - np.round(mir_eval_scores, 3)
 diff[np.less_equal(np.abs(diff), .0010001)] = 0
-print ' ',
-for n, key in enumerate(METRIC_KEYS):
-    print '{:8s}'.format(key[:7]),
-print
-print np.mean(np.abs(diff)/score_mean, axis=0)
+print ' & '.join(['{:10s}'.format(key.replace('McKinney', '')) for key in METRIC_KEYS]),
+print '\\\\'
+print ' & '.join(['{:8.3f}\%'.format(score*100) for score in np.mean(np.abs(diff)/score_mean, axis=0)]),
+print '\\\\'
 
