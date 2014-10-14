@@ -17,8 +17,37 @@ import numpy as np
 # <codecell>
 
 BASE_DATA_PATH = '../../data/onset/'
+
 METRIC_KEYS = ['Average F-Measure', 'Average precision', 'Average recall']
 ALG_NAMES = ['CB1','CF4','CSF1','FMEGS1','FMESS1','MTB1','SB1','SB2','SB3','SB4','ZHZD1']
+
+# <codecell>
+
+try:
+    os.makedirs(BASE_DATA_PATH)
+except OSError:
+    pass
+
+js_dir = os.path.join(BASE_DATA_PATH, 'raw_js_data')
+reference_dir = os.path.join(BASE_DATA_PATH, 'reference')
+csv_dir = os.path.join(BASE_DATA_PATH, 'mirex_scores_raw')
+
+try:
+    os.makedirs(js_dir)
+except OSError:
+    pass
+try:
+    os.makedirs(reference_dir)
+except OSError:
+    pass
+try:
+    os.makedirs(csv_dir)
+except OSError:
+    pass
+try:
+    os.makedirs(os.path.join(BASE_DATA_PATH, 'mir_eval_scores'))
+except OSError:
+    pass
 
 # <codecell>
 
@@ -26,16 +55,11 @@ N_FILES = 85
 JS_URL = "http://nema.lis.illinois.edu/nema_out/mirex2013/results/aod/transcriptiononsetmrx050000{:02d}.js"
 for n in xrange(N_FILES):
     file_url = JS_URL.format(n)
-    urllib.urlretrieve(file_url, os.path.join(BASE_DATA_PATH, 'raw_js_data', os.path.split(file_url)[1]))
+    urllib.urlretrieve(file_url, os.path.join(js_dir, os.path.split(file_url)[1]))
 
 # <codecell>
 
 RESULT_URL = "http://nema.lis.illinois.edu/nema_out/mirex2013/results/aod/{}/per_track_results.csv"
-csv_dir = os.path.join(BASE_DATA_PATH, 'mirex_scores_raw')
-try:
-    os.makedirs(csv_dir)
-except OSError:
-    pass
 for alg in ALG_NAMES:
     file_url = RESULT_URL.format(alg)
     urllib.urlretrieve(file_url, os.path.join(csv_dir, alg + '.csv'))
@@ -62,18 +86,6 @@ for filename in glob.glob(os.path.join(csv_dir, '*.csv')):
 
 # <codecell>
 
-js_dir = os.path.join(BASE_DATA_PATH, 'raw_js_data')
-reference_dir = os.path.join(BASE_DATA_PATH, 'reference')
-
-try:
-    os.makedirs(js_dir)
-except OSError:
-    pass
-try:
-    os.makedirs(reference_dir)
-except OSError:
-    pass
-
 for filename in glob.glob(os.path.join(js_dir, '*.js')):
     base_name = os.path.splitext(os.path.split(filename)[1])[0]
     convert_json_instants_to_lab.convert_json_file_to_lab_files(base_name, js_dir, reference_dir)
@@ -97,28 +109,6 @@ def clean_onsets(onsets):
 
 # <codecell>
 
-def f_measure_greedy(reference_onsets, estimated_onsets, window=.05):
-    # If either list is empty, return 0s
-    if reference_onsets.size == 0 or estimated_onsets.size == 0:
-        return 0., 0., 0.
-    correct = 0.0
-    count = 0
-    for onset in reference_onsets:
-        for n in xrange(count, estimated_onsets.shape[0]):
-            if np.abs(estimated_onsets[n] - onset) < window:
-                correct += 1
-                count = n + 1
-                break
-            elif estimated_onsets[n] > (onset + window):
-                count = n
-                break
-    precision = correct/estimated_onsets.shape[0]
-    recall = correct/reference_onsets.shape[0]
-    # Compute F-measure and return all statistics
-    return mir_eval.util.f_measure(precision, recall), precision, recall
-
-# <codecell>
-
 def process_one_algorithm(algorithm_directory, skip=False):
     ''' Computes mir_eval scores for all output files from one algorithm '''
     for estimated_onsets_file in glob.glob(os.path.join(BASE_DATA_PATH, 'estimated',
@@ -129,7 +119,7 @@ def process_one_algorithm(algorithm_directory, skip=False):
             continue
         scores = np.zeros(len(METRIC_KEYS))
         # Metrics are computed as the mean across all reference annotations
-        for N, reference_onsets_file in enumerate(glob.glob(os.path.join(BASE_DATA_PATH, 'reference', '*',
+        for N, reference_onsets_file in enumerate(glob.glob(os.path.join(reference_dir, '*',
                                                                          os.path.split(estimated_onsets_file)[1]))):
             reference_onsets = clean_onsets(np.loadtxt(reference_onsets_file))
             scores += mir_eval.onset.f_measure(reference_onsets, estimated_onsets)
@@ -145,10 +135,6 @@ def process_one_algorithm(algorithm_directory, skip=False):
 
 # <codecell>
 
-try:
-    os.makedirs(os.path.join(BASE_DATA_PATH, 'mir_eval_scores'))
-except OSError:
-    pass
 for alg_name in ALG_NAMES:
     process_one_algorithm(alg_name)
 
@@ -174,11 +160,10 @@ score_mean = score_mean + (score_mean == 0)
 
 # <codecell>
 
-diff = np.round(mirex_scores, 4) - np.round(mir_eval_scores, 4)
-diff[np.less_equal(np.abs(diff), .00010001)] = 0
-print ' ',
-for n, key in enumerate(METRIC_KEYS):
-    print '{:13s}'.format(key[:12]),
-print
-print np.mean(np.abs(diff)/score_mean, axis=0)
+diff = np.round(mirex_scores, 3) - np.round(mir_eval_scores, 3)
+diff[np.less_equal(np.abs(diff), .0010001)] = 0
+print ' & '.join(['{:10s}'.format(key) for key in ['F-measure', 'Precision', 'Recall']]),
+print '\\\\'
+print ' & '.join(['{:8.3f}\%'.format(score*100) for score in np.mean(np.abs(diff)/score_mean, axis=0)]),
+print '\\\\'
 
