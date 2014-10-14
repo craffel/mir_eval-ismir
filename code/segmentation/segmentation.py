@@ -42,6 +42,25 @@ ALG_NAMES = ['RBH3', 'RBH2', 'RBH1', 'MP1', 'RBH4', 'MP2', 'CF5', 'CF6']
 
 # <codecell>
 
+if not os.path.exists(BASE_DATA_PATH):
+    os.makedirs(BASE_DATA_PATH)
+
+js_dir = os.path.join(BASE_DATA_PATH, 'raw_js_data')
+reference_dir = os.path.join(BASE_DATA_PATH, 'reference')
+csv_dir = os.path.join(BASE_DATA_PATH, 'mirex_scores_raw')
+raw_js_dir = os.path.join(BASE_DATA_PATH, 'raw_js_data')
+
+if not os.path.exists(js_dir):
+    os.makedirs(js_dir)
+if not os.path.exists(reference_dir):
+    os.makedirs(reference_dir)
+if not os.path.exists(csv_dir):
+    os.makedirs(csv_dir)
+if not os.path.exists(raw_js_dir):
+    os.makedirs(raw_js_dir)
+
+# <codecell>
+
 datasets = ['mrx09', 'mrx10_1', 'mrx10_2', 'sal']
 js_prefixes = ['structmrx09', 'structmrx10', 'structmrx10', 'salami']
 # Salami is missing a bunch of entries
@@ -99,9 +118,6 @@ file_ranges = [range(297),
                           1601, 1602, 1606, 1608, 1609, 1612, 1616, 1621, 1629, 1631, 1632, 1633,
                           1637, 1638])]
 JS_URL = "http://nema.lis.illinois.edu/nema_out/mirex2013/results/struct/{}/segments{}{:06d}.js"
-raw_js_dir = os.path.join(BASE_DATA_PATH, 'raw_js_data')
-if not os.path.exists(raw_js_dir):
-    os.makedirs(raw_js_dir)
 for dataset, js_prefix, file_range in zip(datasets, js_prefixes, file_ranges):
     for n in file_range:
         file_url = JS_URL.format(dataset, js_prefix, n)
@@ -110,9 +126,6 @@ for dataset, js_prefix, file_range in zip(datasets, js_prefixes, file_ranges):
 # <codecell>
 
 RESULT_URL = "http://nema.lis.illinois.edu/nema_out/mirex2013/results/struct/{}/{}/per_track_results.csv"
-csv_dir = os.path.join(BASE_DATA_PATH, 'mirex_scores_raw')
-if not os.path.exists(csv_dir):
-    os.makedirs(csv_dir)
 for dataset in datasets:
     for alg in ALG_NAMES:
         file_url = RESULT_URL.format(dataset, alg)
@@ -133,21 +146,11 @@ for filename in glob.glob(os.path.join(BASE_DATA_PATH, 'mirex_scores_raw', '*.cs
                 algo_name = os.path.split(output_path)[1].replace('.csv', '').split('-')[1]
                 output_path = os.path.join(os.path.split(output_path)[0], algo_name)
                 # Make sure output dir exists
-                try:
+                if not os.path.exists(output_path):
                     os.makedirs(output_path)
-                except OSError:
-                    pass
                 np.savetxt(os.path.join(output_path, output_filename), [float(x) for x in row[2:]])
 
 # <codecell>
-
-js_dir = os.path.join(BASE_DATA_PATH, 'raw_js_data')
-reference_dir = os.path.join(BASE_DATA_PATH, 'reference')
-
-if not os.path.exists(js_dir):
-    os.makedirs(js_dir)
-if not os.path.exists(reference_dir):
-    os.makedirs(reference_dir)
 
 for filename in glob.glob(os.path.join(js_dir, '*.js')):
     base_name = os.path.splitext(os.path.split(filename)[1])[0]
@@ -181,12 +184,12 @@ def get_mir_eval_scores(ref_intervals, ref_labels, est_intervals, est_labels):
                                                                        t_min=0,
                                                                        t_max=ref_intervals.max())
 
-    S_over, S_under, S_F = mir_eval.structure.nce(ref_intervals_adj, ref_labels_adj,
+    S_over, S_under, S_F = mir_eval.segment.nce(ref_intervals_adj, ref_labels_adj,
                                                   est_intervals_adj, est_labels_adj)
     scores.append(S_over)
     scores.append(S_under)
 
-    precision, recall, f = mir_eval.structure.pairwise(ref_intervals_adj,
+    precision, recall, f = mir_eval.segment.pairwise(ref_intervals_adj,
                                                        ref_labels_adj,
                                                        est_intervals_adj,
                                                        est_labels_adj)
@@ -194,20 +197,20 @@ def get_mir_eval_scores(ref_intervals, ref_labels, est_intervals, est_labels):
     scores.append(precision)
     scores.append(recall)
 
-    rand_score = mir_eval.structure.rand_index(ref_intervals_adj, ref_labels_adj,
+    rand_score = mir_eval.segment.rand_index(ref_intervals_adj, ref_labels_adj,
                                                est_intervals_adj, est_labels_adj)
     scores.append(rand_score)
 
-    P05, R05, F05 = mir_eval.boundary.detection(ref_intervals, est_intervals, window=0.5)
+    P05, R05, F05 = mir_eval.segment.detection(ref_intervals, est_intervals, window=0.5)
     scores.append(F05)
     scores.append(P05)
     scores.append(R05)
-    P3, R3, F3 = mir_eval.boundary.detection(ref_intervals, est_intervals, window=3)
+    P3, R3, F3 = mir_eval.segment.detection(ref_intervals, est_intervals, window=3)
     scores.append(F3)
     scores.append(P3)
     scores.append(R3)
 
-    r_to_e, e_to_r = mir_eval.boundary.deviation(ref_intervals, est_intervals)
+    r_to_e, e_to_r = mir_eval.segment.deviation(ref_intervals, est_intervals)
     scores.append(r_to_e)
     scores.append(e_to_r)
 
@@ -222,12 +225,12 @@ def process_one_algorithm(algorithm_directory, skip=False):
         # Skip scores already computed
         if skip and os.path.exists(estimated_segments_file.replace('estimated', 'mir_eval_scores')):
             continue
-        est_intervals, est_labels = mir_eval.io.load_intervals(estimated_segments_file)
+        est_intervals, est_labels = mir_eval.io.load_labeled_intervals(estimated_segments_file)
         scores = np.zeros(len(METRIC_KEYS))
         # Metrics are computed as the mean across all reference annotations
         for N, reference_segments_file in enumerate(glob.glob(os.path.join(BASE_DATA_PATH, 'reference', '*',
                                                                         os.path.split(estimated_segments_file)[1]))):
-            ref_intervals, ref_labels = mir_eval.io.load_intervals(reference_segments_file)
+            ref_intervals, ref_labels = mir_eval.io.load_labeled_intervals(reference_segments_file)
             try:
                 scores += get_mir_eval_scores(ref_intervals, ref_labels, est_intervals, est_labels)
             except Exception as e:
