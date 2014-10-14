@@ -23,31 +23,22 @@ ALG_NAMES = ['CB1','CF4','CSF1','FMEGS1','FMESS1','MTB1','SB1','SB2','SB3','SB4'
 
 # <codecell>
 
-try:
+if not os.path.exists(BASE_DATA_PATH):
     os.makedirs(BASE_DATA_PATH)
-except OSError:
-    pass
 
 js_dir = os.path.join(BASE_DATA_PATH, 'raw_js_data')
 reference_dir = os.path.join(BASE_DATA_PATH, 'reference')
 csv_dir = os.path.join(BASE_DATA_PATH, 'mirex_scores_raw')
+estimated_dir = os.path.join(BASE_DATA_PATH, 'estimated')
 
-try:
+if not os.path.exists(js_dir):
     os.makedirs(js_dir)
-except OSError:
-    pass
-try:
+if not os.path.exists(reference_dir):
     os.makedirs(reference_dir)
-except OSError:
-    pass
-try:
+if not os.path.exists(csv_dir):
     os.makedirs(csv_dir)
-except OSError:
-    pass
-try:
+if not os.path.exists(os.path.join(BASE_DATA_PATH, 'mir_eval_scores')):
     os.makedirs(os.path.join(BASE_DATA_PATH, 'mir_eval_scores'))
-except OSError:
-    pass
 
 # <codecell>
 
@@ -78,10 +69,8 @@ for filename in glob.glob(os.path.join(csv_dir, '*.csv')):
                 output_path = filename.replace('mirex_scores_raw', 'mirex_scores')
                 output_path = os.path.join(os.path.split(output_path)[0], os.path.split(output_path)[1].replace('.csv', ''))
                 # Make sure output dir exists
-                try:
+                if not os.path.exists(output_path):
                     os.makedirs(output_path)
-                except OSError:
-                    pass
                 np.savetxt(os.path.join(output_path, output_filename), [float(x) for x in row[2:]])
 
 # <codecell>
@@ -93,8 +82,6 @@ for filename in glob.glob(os.path.join(js_dir, '*.js')):
 for filename in glob.glob(os.path.join(reference_dir, '*', '*.lab')):
     shutil.move(filename, filename.replace('.lab', '.txt'))
     
-estimated_dir = os.path.join(BASE_DATA_PATH, 'estimated')
-        
 for alg_name in ALG_NAMES:
     shutil.move(os.path.join(reference_dir, alg_name), os.path.join(estimated_dir, alg_name))
 
@@ -127,10 +114,8 @@ def process_one_algorithm(algorithm_directory, skip=False):
         scores /= float(N + 1)
         output_path = os.path.split(estimated_onsets_file)[0].replace('estimated', 'mir_eval_scores')
         # Make sure output dir exists
-        try:
+        if not os.path.exists(output_path):
             os.makedirs(output_path)
-        except OSError:
-            pass
         np.savetxt(estimated_onsets_file.replace('estimated', 'mir_eval_scores'), scores)
 
 # <codecell>
