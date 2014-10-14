@@ -251,13 +251,12 @@ score_mean = score_mean + (score_mean == 0)
 
 # <codecell>
 
-diff = np.round(mirex_scores, 4) - np.round(mir_eval_scores, 4)
-diff[np.less_equal(np.abs(diff), .00010001)] = 0
-print ' ',
-for n, key in enumerate(METRIC_KEYS):
-    print '{:13s}'.format(key[:12]),
-print
-print np.mean(np.abs(diff)/score_mean, axis=0)
+diff = np.round(mirex_scores, 3) - np.round(mir_eval_scores, 3)
+diff[np.less_equal(np.abs(diff), .0010001)] = 0
+print ' & '.join(['{:10s}'.format(key) for key in METRIC_KEYS]),
+print '\\\\'
+print ' & '.join(['{:8.3f}\%'.format(score*100) for score in np.mean(np.abs(diff)/score_mean, axis=0)]),
+print '\\\\'
 
 # <codecell>
 
