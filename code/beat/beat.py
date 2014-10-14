@@ -122,15 +122,15 @@ def get_mir_eval_scores(reference_beats, estimated_beats):
     F-Measure,Cemgil,Goto,McKinney P-score,CMLc,CMLt,AMLc,AMLt,D (bits)
     '''
     scores = []
-    for metric_name in ['F-measure', 'Cemgil', 'Goto', 'P-score', 'Continuity', 'Information Gain']:
-        
-        metric_output = mir_eval.beat.METRICS[metric_name](np.sort(mir_eval.beat.trim_beats(reference_beats)),
-                                                           np.sort(mir_eval.beat.trim_beats(estimated_beats)))
+    for metric in [mir_eval.beat.f_measure, mir_eval.beat.cemgil, mir_eval.beat.goto, mir_eval.beat.p_score,
+                   mir_eval.beat.continuity, mir_eval.beat.information_gain]:
+        metric_output = metric(np.sort(mir_eval.beat.trim_beats(reference_beats)),
+                               np.sort(mir_eval.beat.trim_beats(estimated_beats)))
         # MIREX only reports Cemgil for no metric variations
-        if metric_name == 'Cemgil':
+        if metric == mir_eval.beat.cemgil:
             scores.append(metric_output[0])
         # MIREX reports unnormalized information gain, we normalize by log2(41)
-        elif metric_name == 'Information Gain':
+        elif metric == mir_eval.beat.information_gain:
             scores.append(metric_output*np.log2(41.)/100.)
         else:
             # Some metrics return tuples
