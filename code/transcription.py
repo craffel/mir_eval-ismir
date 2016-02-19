@@ -174,21 +174,21 @@ def compare_scores(mirex_scores, mir_eval_scores):
     print("All close 1e-2: {}".format(all_close_2))
     print("All close 1e-1: {}".format(all_close_1))
     print(" ")
+    print(" ")
+
+    # print("mireval scores:")
+    # for line in mir_eval_scores:
+    #     for val in line:
+    #         sys.stdout.write("%.3f\t" % val)
+    #     sys.stdout.write("\n")
     # print(" ")
-
-    print("mireval scores:")
-    for line in mir_eval_scores:
-        for val in line:
-            sys.stdout.write("%.3f\t" % val)
-        sys.stdout.write("\n")
-    print(" ")
-
-    print("mirex scores:")
-    for line in mirex_scores:
-        for val in line:
-            sys.stdout.write("%.3f\t" % val)
-        sys.stdout.write("\n")
-    print(" ")
+    #
+    # print("mirex scores:")
+    # for line in mirex_scores:
+    #     for val in line:
+    #         sys.stdout.write("%.3f\t" % val)
+    #     sys.stdout.write("\n")
+    # print(" ")
 
 
 def compare_alg_results(alg):
@@ -227,5 +227,5 @@ def compare_all_alg_results():
 
 if __name__ == "__main__":
 
-    # compare_all_alg_results()
-    compare_alg_results('BW2')
+    compare_all_alg_results()
+    # compare_alg_results('BW2')
