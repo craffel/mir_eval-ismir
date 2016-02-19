@@ -106,7 +106,8 @@ def compute_mireval_scores(alg):
                os.path.basename(est_path).replace(".txt","")
         mir_eval_filenames.append(os.path.basename(est_path).replace(".txt",""))
 
-        ref_int, ref_pitch = mir_eval.io.load_valued_intervals(ref_path)
+        ref_int, ref_pitch = mir_eval.io.load_valued_intervals(ref_path,
+                                                               delimiter=',')
         est_int, est_pitch = mir_eval.io.load_valued_intervals(est_path)
         scores = mir_eval.transcription.evaluate(ref_int, ref_pitch, est_int,
                                                  est_pitch)
@@ -144,6 +145,7 @@ def compare_scores(mirex_scores, mir_eval_scores):
     # print(mir_eval_scores)
     # print(" ")
 
+    print(" ")
     print("P\tR\tF\tP_nooff\tR_nooff\tF_nooff")
     print('----------------------------------------------')
     diff = mir_eval_scores - mirex_scores
@@ -172,6 +174,20 @@ def compare_scores(mirex_scores, mir_eval_scores):
     print("All close 1e-2: {}".format(all_close_2))
     print("All close 1e-1: {}".format(all_close_1))
     print(" ")
+    # print(" ")
+
+    print("mireval scores:")
+    for line in mir_eval_scores:
+        for val in line:
+            sys.stdout.write("%.3f\t" % val)
+        sys.stdout.write("\n")
+    print(" ")
+
+    print("mirex scores:")
+    for line in mirex_scores:
+        for val in line:
+            sys.stdout.write("%.3f\t" % val)
+        sys.stdout.write("\n")
     print(" ")
 
 
