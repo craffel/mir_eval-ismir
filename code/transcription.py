@@ -89,7 +89,8 @@ def compute_mireval_scores(alg):
         F-measure_no_offset
     '''
 
-    ref_folder = 'data/transcription/mirex2015_su/reference/gt_Note'
+    # ref_folder = 'data/transcription/mirex2015_su/reference/gt_Note'
+    ref_folder = 'data/transcription/mirex2015_su/reference/gt_textfrommidi'
     ref_tracks = glob.glob(os.path.join(ref_folder, "*.txt"))
 
     est_folder = 'data/transcription/mirex2015_su/estimate/%s/' % alg
@@ -101,7 +102,7 @@ def compute_mireval_scores(alg):
     # Collect mir_eval scores
     for ref_path, est_path in zip(ref_tracks, est_tracks):
 
-        assert os.path.basename(ref_path).replace("_note.txt","") == \
+        assert os.path.basename(ref_path).replace("_tutti.mid.txt","") == \
                os.path.basename(est_path).replace(".txt","")
         mir_eval_filenames.append(os.path.basename(est_path).replace(".txt",""))
 
@@ -210,4 +211,5 @@ def compare_all_alg_results():
 
 if __name__ == "__main__":
 
-    compare_all_alg_results()
+    # compare_all_alg_results()
+    compare_alg_results('BW2')
