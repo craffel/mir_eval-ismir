@@ -42,13 +42,13 @@ def load_mirex_scores(alg):
     mirex_results = pd.read_csv(mirex_results_path)
     mirex_results = mirex_results.fillna(0)
     precision = mirex_results['Precision'].tolist()[:10]
-    recall = mirex_results['Precision'].tolist()[:10]
+    recall = mirex_results['Recall'].tolist()[:10]
     f1 = mirex_results['Ave. F-measure'].tolist()[:10]
 
     mirex_nooffset_results = pd.read_csv(mirex_nooffset_results_path)
     mirex_nooffset_results = mirex_nooffset_results.fillna(0)
     precision_nooffset = mirex_nooffset_results['Precision'].tolist()[:10]
-    recall_nooffset = mirex_nooffset_results['Precision'].tolist()[:10]
+    recall_nooffset = mirex_nooffset_results['Recall'].tolist()[:10]
     f1_nooffset = mirex_nooffset_results['Ave. F-measure'].tolist()[:10]
 
     mirex_scores.append(precision)
